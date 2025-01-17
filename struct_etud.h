@@ -25,5 +25,5 @@ typedef struct liste{
 }Liste;
 
 void creer_etu(int type,int ligne,int tour,Liste * l);
-
+Liste* placer(FILE * nom_fichier);
 #endif
