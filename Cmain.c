@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "Caffichage.h"
 #include "struct_etud.h"
-#include "CplacementEtu.h"
 #define TAILLE_MAX 100
 
 int main(int argc, char* argv[])
