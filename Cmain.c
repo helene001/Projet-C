@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Caffichage.h"
+#include "struct_etud.h"
+#include "CplacementEtu.h"
 #define TAILLE_MAX 100
 
 int main(int argc, char* argv[])
@@ -18,7 +20,7 @@ int main(int argc, char* argv[])
         
         //afficher les vagues AVANT le debut du jeu
         afficheVagues(fichierVague);
-        
+        Liste *l=placer(fichierVague);
         fclose(fichierVague);
     }
     else
