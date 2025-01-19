@@ -2,6 +2,7 @@
 #define STRUCT_ETUD_H
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define NOMBRE_TOURS 9  
 #define NOMBRE_LIGNES 7 
@@ -11,6 +12,7 @@ int pointsDeVie;
 int ligne;
 int position;
 int vitesse;
+int degats;
 int tour;
 struct etudiant* next;
 struct etudiant* next_line;
@@ -26,4 +28,7 @@ typedef struct liste{
 
 void creer_etu(int type,int ligne,int tour,Liste * l);
 Liste* placer(FILE * nom_fichier);
+void type_Etudiant(int type,Etudiant* e);
+void liberer_liste(Liste *l);
+void afficher_liste(Liste *l);
 #endif
