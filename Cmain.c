@@ -21,6 +21,7 @@ int main(int argc, char* argv[])
         afficheVagues(fichierVague);
         rewind(fichierVague);
         Liste *l=placer(fichierVague);
+        liberer_liste(l);
         fclose(fichierVague);
     }
     else
