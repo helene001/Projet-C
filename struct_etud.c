@@ -72,6 +72,8 @@ void type_Etudiant(int type,Etudiant* e){
 Liste* placer(FILE * nom_fichier){
   
 Liste*l=malloc(NOMBRE_LIGNES*sizeof(Liste));
+/* Un tableau de Liste de taille NOMBRE_LIGNES est créé. Chaque indice du tableau i contiendra tout
+les Etudiant de de la ligne i+1 chainés entre eux. */ 
 if(l==NULL){
     printf("erreur d'allocation");
     exit(1); //j'arrete tout le programme
