@@ -31,4 +31,5 @@ Liste* placer(FILE * nom_fichier);
 void type_Etudiant(int type,Etudiant* e);
 void liberer_liste(Liste *l);
 void afficher_liste(Liste *l);
+touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne ,Liste *l);
 #endif
