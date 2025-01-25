@@ -57,7 +57,7 @@ void afficheVagues(FILE* fichierVague)
 }
 
 
-/* affichejeu(Liste *l) affiche les Etudiants avec leurs PV tour par tour, tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
+/* affichejeu(Liste *l) affiche les Etudiants avec leurs PV tour par tour tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
 void affichejeu(Liste *l){
     for (int h=0;h<NOMBRE_TOURS;h++){ /* la premiere boucle permet de gérer l'apparition des Etudiants
                                         en fonction de leur tour et donc de mettre a jour l'attribut prochain de Liste*/
