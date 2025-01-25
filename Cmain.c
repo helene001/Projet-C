@@ -4,7 +4,7 @@
 #include "struct_etud.h"
 #include <time.h>
 #define TAILLE_MAX 100
-
+//#define Fichier_vague ... a faire quand on aura plusieurs mode de jeu pour bonne gestion memoire en cas d 'erreur
 int main(int argc, char* argv[])
 {
     FILE* fichierVague = NULL;
@@ -21,8 +21,9 @@ int main(int argc, char* argv[])
         afficheVagues(fichierVague);
         rewind(fichierVague);
         Liste *l=placer(fichierVague);
-        liberer_liste(l);
         fclose(fichierVague);
+        affichejeu(l);
+        liberer_liste(l);
     }
     else
     {
