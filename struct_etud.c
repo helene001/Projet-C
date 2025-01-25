@@ -147,7 +147,9 @@ void touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne ,Liste *l){
 }
 /* avancer(Etudiant* e,Liste *l) fait avancer les Etudiants en fonction de leur vitesse et de la position
     de l'Etudiant qui le précède.*/
+
 void avancer(Etudiant* e,Liste *l){
+    //si e est le premier de sa ligne, on a pas de problèmes.
     if (e->prev_line==NULL){
         if(e->type=='M'){
             if(e->avancer_ou_non){
@@ -159,7 +161,7 @@ void avancer(Etudiant* e,Liste *l){
         }else{
             e->position-=e->vitesse;
         }
-        //si e est le premier de sa ligne, on a pas de problèmes.
+        
     }else{
     switch (e->type){
         case 'S':
