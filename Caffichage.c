@@ -59,64 +59,31 @@ void afficheVagues(FILE* fichierVague)
 
 /* affichejeu(Liste *l) affiche les Etudiants avec leurs PV tour par tour tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
 void affichejeu(Liste *l){
-    for (int h=0;h<NOMBRE_TOURS;h++){ /* la premiere boucle permet de gérer l'apparition des Etudiants
-                                        en fonction de leur tour et donc de mettre a jour l'attribut prochain de Liste*/
-
-        for (int i = 0; i < NOMBRE_LIGNES; i++){ /* La deuxieme boucle permet de faire avancer les Etudiant grace a la fonction avancer() dans struct_etud.c*/
-            Etudiant *courant=l[i].tete;
-            if(courant!=NULL){// on vérifie si la ligne a des Etudiants ou pas
-
-                if (l[i].prochain->tour==h){ //si on est au bon h, l'Etudiant qui a l'attribut tour égale à h va apparaitre.
-                        l[i].prochain=l[i].prochain->next;
-                    }
-                    while(courant!=l[i].prochain){
-                        avancer(courant,l); // on fait avancer tout les Etudiants de la ligne i+1 (donc de la  l[i])
-                        if(courant->position<=0){
-                            perdu(l); //si un Etudiant arrive a la position 0 ou moins, le joueur a perdu
-                            return;
-                        }
-                        courant=courant->next_line;
-                    }
-                    courant =l[i].tete;
-            }
-
-            printf("%d|", i + 1);
-            for (int j = 0; j < 15; j++){/*la 3eme boucle permet d'afficher les Etudiants*/
-                if(courant!=NULL){
-                    if (courant->position==j){
-                        printf("%3d%c ",courant->pointsDeVie,courant->type);
-                        courant=courant->next_line;
-                    }else{
-                        printf("%4c ", '.');
-                    }
-                }else{
-                    printf("%4c ", '.');
-                }
-            }
-            printf("\n");
-        }
-        printf("\n");
-        printf("\n");
-        usleep(500000);
-    }
-    /* on sort de la premiere boucle for car il n'y a plus d'Etudiant qui doivent apparaitre
-        et on boucle tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
+    
+    int tour_courant=0;
     while(l[0].tete!=NULL || l[1].tete!=NULL || l[2].tete!=NULL || l[3].tete!=NULL || l[4].tete!=NULL || l[5].tete!=NULL || l[6].tete!=NULL){
+
         for (int i = 0; i < NOMBRE_LIGNES; i++){
             Etudiant *courant=l[i].tete;
-            if(courant!=NULL){
-                    while(courant!=l[i].prochain){
-                        avancer(courant,l);
-                        if(courant->position<=0){
-                            perdu(l);
-                            return;
+            if(courant!=NULL){// on vérifie si la ligne a des Etudiants ou pas
+                if (l[i].prochain!=NULL){
+                    if (l[i].prochain->tour<=tour_courant){ 
+                            l[i].prochain=l[i].prochain->next;
                         }
-                        courant=courant->next_line;
+                }
+                while(courant!=l[i].prochain){
+                    avancer(courant,l);
+                    if(courant->position<=0){
+                        perdu(l);
+                        return;
                     }
-                    courant =l[i].tete;
+                    courant=courant->next_line;
+                }
+                courant =l[i].tete;
             }
             printf("%d|", i + 1);
             for (int j = 0; j < 15; j++){
+
                 if(courant!=NULL){
                     if (courant->position==j){
                         printf("%3d%c ",courant->pointsDeVie,courant->type);
@@ -133,6 +100,7 @@ void affichejeu(Liste *l){
         printf("\n");
         printf("\n");
         usleep(500000);
+        tour_courant+=1;
     }
     gagner();
 
