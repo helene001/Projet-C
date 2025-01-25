@@ -59,7 +59,6 @@ void type_Etudiant(int type,Etudiant* e,Liste *l){
             e->vitesse=4;
             break;
         case 'X':
-            srand(time(NULL));
             e->degats=rand()%4+1;
             e->pointsDeVie=rand()%7+1;
             e->vitesse=rand()%3+1;
@@ -76,12 +75,7 @@ void type_Etudiant(int type,Etudiant* e,Liste *l){
     de ligne en lisant le fichier contenant les informations par rapport aux vagues. Elle utilise creer_etu(int type,int ligne,int tour,Liste* l )
     pour ajouter ces Etudiants.   */
 Liste* placer(FILE * nom_fichier){
-/*FILE* fichierMechant = NULL;
-fichierMechant = fopen(nom_fichier, "r");
-if (fichierMechant == NULL) {
-    printf("Erreur lors de l'ouverture du fichier");
-    exit(1);
-}*/
+
 
 Liste*l=malloc(NOMBRE_LIGNES*sizeof(Liste));
 if(l==NULL){
@@ -98,6 +92,7 @@ l[i].prochain=NULL;
 int tour,ligne;
 char type;
 int header;
+srand(time(NULL));//j'intialise le generateur aleatoire pour le type 'X'
 fscanf(nom_fichier, "%d", &header);
 while (fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type) == 3) { /* tant que l'on a 3 colonnes de la forme tour d'apparition ligne type on 
                                                                         lit les élèments du fichier, on les mets dans les variables tour,ligne,char et on
