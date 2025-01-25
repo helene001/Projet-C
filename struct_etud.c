@@ -8,10 +8,12 @@ void creer_etu(int type,int ligne,int tour,Liste* l ){
     Etudiant* e=malloc(sizeof(Etudiant));
     if(e==NULL){
         printf("erreur d'allocation");
+        liberer_liste(l);
+        //fclose(fichier vague)
         exit(1); //j'arrete tout le programme
     }
     e->type=type;
-    type_Etudiant(type,e);
+    type_Etudiant(type,e,l);
     e->next=NULL;
     e->next_line=NULL;
     if(l[ligne-1].tete==NULL){ //si e est le premier sur sa ligne 
@@ -20,7 +22,7 @@ void creer_etu(int type,int ligne,int tour,Liste* l ){
         l[ligne-1].tete=e;
         l[ligne-1].prochain=e;
     }
-    else{// sinon on chaine e avec l'Etudiant qui est devant lui (qui est le dernier etudiant de l[ligne-1] avant l'ajout de e)
+    else{// sinon on chaine e avec l'Etudiant qui est devant lui (qui est le dernier avant l'ajout de e)
         e->prev_line=l[ligne-1].fin;
         l[ligne-1].fin->next_line=e;
         l[ligne-1].fin->next=e;
@@ -28,12 +30,12 @@ void creer_etu(int type,int ligne,int tour,Liste* l ){
         }
         e->ligne=ligne;
         e->tour=tour;
-        e->position=(-1);
+        e->position=15;
 
 }
 /* la fonction type_Etudiant(int type,Etudiant* e) permet d'initialiser les attributs degats, pointsDeVie
    et vitesse en fonction de l'attribut type d'Etudiants. */
-void type_Etudiant(int type,Etudiant* e){
+void type_Etudiant(int type,Etudiant* e,Liste *l){
     switch(type){
         case 'Z':
             e->degats=1;
@@ -42,8 +44,9 @@ void type_Etudiant(int type,Etudiant* e){
             break;
         case 'M':
             e->degats=3;
-            e->pointsDeVie=10;
+            e->pointsDeVie=9;
             e->vitesse=1;
+            e->avancer_ou_non=1;
             break;
         case 'L':
             e->degats=5;
@@ -63,6 +66,9 @@ void type_Etudiant(int type,Etudiant* e){
             break;
         default:
             printf("type n'existe pas");
+            free(e);
+            liberer_liste(l);
+            //fclose(fichier_vague) apres
             exit(1);
     }
 }
@@ -70,12 +76,17 @@ void type_Etudiant(int type,Etudiant* e){
     de ligne en lisant le fichier contenant les informations par rapport aux vagues. Elle utilise creer_etu(int type,int ligne,int tour,Liste* l )
     pour ajouter ces Etudiants.   */
 Liste* placer(FILE * nom_fichier){
-  
+/*FILE* fichierMechant = NULL;
+fichierMechant = fopen(nom_fichier, "r");
+if (fichierMechant == NULL) {
+    printf("Erreur lors de l'ouverture du fichier");
+    exit(1);
+}*/
+
 Liste*l=malloc(NOMBRE_LIGNES*sizeof(Liste));
-/* Un tableau de Liste de taille NOMBRE_LIGNES est créé. Chaque indice du tableau i contiendra tout
-les Etudiant de de la ligne i+1 chainés entre eux. */ 
 if(l==NULL){
     printf("erreur d'allocation");
+    fclose(nom_fichier);
     exit(1); //j'arrete tout le programme
 }
 for(int i=0;i<7;i++){
@@ -88,15 +99,13 @@ int tour,ligne;
 char type;
 int header;
 fscanf(nom_fichier, "%d", &header);
-while (fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type) == 3) { 
-  /* tant que l'on a 3 colonnes de la forme tour d'apparition, ligne et type on 
-  lit les élèments du fichier, on les mets dans les variables tour,ligne,char et on
-  les utilise pour créer un nouvel Etudiant */
-    printf("%d ",type );
+while (fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type) == 3) { /* tant que l'on a 3 colonnes de la forme tour d'apparition ligne type on 
+                                                                        lit les élèments du fichier, on les mets dans les variables tour,ligne,char et on
+                                                                        les utilise pour créer un nouvel Etudiant */
     creer_etu(type,ligne,tour,l);
     }
     printf("\n");
-
+//fclose(fichierMechant);
 return l;
 }
 /* liberer_liste(liste *l) permet de liberer la memoire allouée lors de l'appel de la fonction placer. */
@@ -141,3 +150,75 @@ void touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne ,Liste *l){
         }
     }
 }
+/* avancer(Etudiant* e,Liste *l) fait avancer les Etudiants en fonction de leur vitesse et de la position
+    de l'Etudiant qui le précède.*/
+void avancer(Etudiant* e,Liste *l){
+    if (e->prev_line==NULL){
+        if(e->type=='M'){
+            if(e->avancer_ou_non){
+                    e->position-=1;
+                    e->avancer_ou_non=0; /* e n'avancera pas au prochain affichage*/
+                }else{
+                    e->avancer_ou_non=1;
+                }
+        }else{
+            e->position-=e->vitesse;
+        }
+        //si e est le premier de sa ligne, on a pas de problèmes.
+    }else{
+    switch (e->type){
+        case 'S':
+            if (e->position-3>e->prev_line->position){ /* je vérifie si il n'y a pas un autre etudiant qui peut gêner e*/
+                e->position-=3;
+            }else if(e->position-2>e->prev_line->position){
+                e->position-=2;
+            }else if(e->position-1>e->prev_line->position){
+                e->position-=1;
+            }
+            break;
+        case 'X':
+            int vit=e->vitesse; /* vu que la vitesse de X peut varier, je suis obligé de faire une boucle*/
+            while(vit>0){
+                if(e->position-vit>e->prev_line->position){
+                    e->position-=vit;
+                    break;
+                }else{
+                    vit-=1;
+                }
+            }
+            break;
+        case 'M':
+            if (e->position-1>e->prev_line->position){
+                if(e->avancer_ou_non){
+                    e->position-=1;
+                    e->avancer_ou_non=0; /* e n'avancera pas au prochain affichage*/
+                }else{
+                    e->avancer_ou_non=1;
+                }
+            }else{
+                e->avancer_ou_non=1;
+            }
+            break;
+        default :
+            if (e->position-1>e->prev_line->position){
+                e->position-=1;
+            }
+            break;
+    }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
