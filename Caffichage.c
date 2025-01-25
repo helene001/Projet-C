@@ -100,7 +100,7 @@ void affichejeu(Liste *l){
         usleep(500000);
     }
     /* on sort de la premiere boucle for car il n'y a plus d'Etudiant qui doivent apparaitre
-        et on boucle tant qu'ils ne sont pas tous mort ou que le joueur a perdu*/
+        et on boucle tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
     while(l[0].tete!=NULL || l[1].tete!=NULL || l[2].tete!=NULL || l[3].tete!=NULL || l[4].tete!=NULL || l[5].tete!=NULL || l[6].tete!=NULL){
         for (int i = 0; i < NOMBRE_LIGNES; i++){
             Etudiant *courant=l[i].tete;
@@ -138,7 +138,7 @@ void affichejeu(Liste *l){
 
 }
 
-//a faire mieux apres perdu et gagner
+//perdu et  gagner a faire mieux apres
 
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void perdu(){
