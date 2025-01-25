@@ -143,7 +143,7 @@ void affichejeu(Liste *l){
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void perdu(){
     system("clear");
-    printf("vous avez perdu gros Neuille\n");
+    printf("vous avez perdu \n");
 }
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void gagner(){
