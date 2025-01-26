@@ -119,4 +119,53 @@ void gagner(){
     printf("vous avez gagner");
 }
 
+//fonction qui verifie si le fichier est conforme
+int fichierConforme(FILE* fichierVague)
+{
+    //gagnotte conforme ?
+    char chaineCagnotte[100] = "";
+    int i = 0;
+    fgets(chaineCagnotte, 100, fichierVague);
+
+    while ((chaineCagnotte[i] != '\0') && (chaineCagnotte[i] != '\n'))
+    {
+
+        if ((chaineCagnotte[i] < 48) || (chaineCagnotte[i] > 57))
+        {
+            printf("Cagnotte non conforme\n"); //les valeurs ascii des chiffres de 0 à 9 sont entre 48 et 57 inclus
+            return 0; //0 signifie faux donc ici fichier NON conforme
+        }
+        i++;
+    }
+    
+    //positions conformes ?
+    char chainePositions[100] = "";
+    while (fgets(chainePositions, 100, fichierVague) != NULL)
+    {
+        if (strlen(chainePositions) > 6)
+        {
+            printf("Format des lignes non conforme.\n");
+            return 0;
+        }
+        else if ((chainePositions[0] < 49) || (chainePositions[0] > 57) || (chainePositions[2] < 49) || (chainePositions[2] > 57))
+        {
+            printf("Positions non conformes.\n");
+            return 0;
+        }
+        else if ((chainePositions[1] != ' ') || (chainePositions[3] != ' '))
+        {
+            printf("Espaces entre les positions non conformes.\n");
+            return 0;
+        }
+        else if ((chainePositions[4] != 'Z') && (chainePositions[4] != 'M') && (chainePositions[4] != 'L') && (chainePositions[4] != 'S') && (chainePositions[4] != 'X'))
+        {
+            printf("Type non conforme.\n");
+            return 0;
+        }
+    }
+    printf("Fichier conforme.\n");
+    rewind(fichierVague); //si tout va bien, remettre le curseur au debut du fichier
+    return 1;
+}
+
 
