@@ -12,11 +12,12 @@ int main(int argc, char* argv[])
     
     char cagnotte[TAILLE_MAX]= "";
  
-    if (fichierVague != NULL)
+    if ((fichierVague != NULL) && (fichierConforme(fichierVague)))
     {
         //gestion cagnotte
         fgets(cagnotte, TAILLE_MAX, fichierVague);
         printf("Credit restant : %s\n", cagnotte);
+        
         //afficher les vagues AVANT le debut du jeu
         afficheVagues(fichierVague);
         rewind(fichierVague);
@@ -27,7 +28,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        printf("Erreur");
+        printf("Erreur.\n");
     }
     return 0;
 }
