@@ -6,3 +6,4 @@ void afficheVagues(FILE*);
 void affichejeu(Liste *l);
 void perdu();
 void gagner();
+int fichierConforme(FILE*);
