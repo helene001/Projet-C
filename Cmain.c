@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
     }
     else
     {
+        fclose(fichierVague);
         printf("Erreur.\n");
     }
     return 0;
