@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include "Caffichage.h"
 #include "struct_etud.h"
+#include "struct_jeu.h"
 #include <time.h>
+#include <string.h>
 #define TAILLE_MAX 100
 //#define Fichier_vague ... a faire quand on aura plusieurs mode de jeu pour bonne gestion memoire en cas d 'erreur
 int main(int argc, char* argv[])
@@ -21,10 +23,15 @@ int main(int argc, char* argv[])
         //afficher les vagues AVANT le debut du jeu
         afficheVagues(fichierVague);
         rewind(fichierVague);
-        Liste *l=placer(fichierVague);
+        Jeu* jeu=malloc(sizeof(Jeu));
+        jeu->tour=0;
+        placer(jeu,fichierVague);
+        connecte_ligne(jeu);
         fclose(fichierVague);
-        affichejeu(l);
-        liberer_liste(l);
+        affichejeu(jeu);
+        liberer_etudiant(jeu);
+        free(jeu);
+        
     }
     else
     {
