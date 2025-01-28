@@ -1,9 +1,15 @@
+#ifndef CAFFICHAGE_H
+#define CAFFICHAGE_H
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "struct_etud.h"
+#include "struct_jeu.h"
+
 void afficheTerrainNeutre(void);
 void afficheVagues(FILE*);
-void affichejeu(Liste *l);
-void perdu();
+void affichejeu(Jeu *j);
+void perdu(Jeu* jeu);
 void gagner();
-int fichierConforme(FILE*);
+int fichierConforme(FILE *fichierVague);
+
+#endif 
