@@ -2,40 +2,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-/*creer_etu(int type,int ligne,int tour,Liste* l ) créer des Etudiants et les chaines entre eux en fonctions de leurs lignes
-  et en les insérents dans le tableau de Liste l. Cette fonction est utilisé dans la fonction placer(FILE* nom_fichier)*/
-void creer_etu(int type,int ligne,int tour,Liste* l ){
+#include "struct_jeu.h"
+#include <string.h>
+
+/*creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier ) créer des Etudiants et les chaines entre eux en fonctions de leurs lignes. 
+Cette fonction est utilisé dans la fonction placer(Jeu* jeu,FILE* nom_fichier)*/
+Etudiant* creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier){
     Etudiant* e=malloc(sizeof(Etudiant));
-    if(e==NULL){
+    if(e==NULL){// si il y'a une erreur d'allocation la mémoire est libéré correctement
         printf("erreur d'allocation");
-        liberer_liste(l);
-        //fclose(fichier vague)
+        liberer_etudiant(jeu);
+        free(jeu);
+        fclose(nom_fichier);
         exit(1); //j'arrete tout le programme
     }
     e->type=type;
-    type_Etudiant(type,e,l);
+    type_Etudiant(type,e,jeu);//type_Etudiant est appelé pour initialiser les attributs degats, pointsDeVie et vitesse  
     e->next=NULL;
     e->next_line=NULL;
-    if(l[ligne-1].tete==NULL){ //si e est le premier sur sa ligne 
-        e->prev_line=NULL;
-        l[ligne-1].fin=e;
-        l[ligne-1].tete=e;
-        l[ligne-1].prochain=e;
-    }
-    else{// sinon on chaine e avec l'Etudiant qui est devant lui (qui est le dernier avant l'ajout de e)
-        e->prev_line=l[ligne-1].fin;
-        l[ligne-1].fin->next_line=e;
-        l[ligne-1].fin->next=e;
-        l[ligne-1].fin=e;
-        }
-        e->ligne=ligne;
-        e->tour=tour;
-        e->position=15;
+    e->prev_line=NULL;
+    e->prev=NULL;
+    e->ligne=ligne;
+    e->tour=tour;
+    e->position=15; 
 
 }
-/* la fonction type_Etudiant(int type,Etudiant* e) permet d'initialiser les attributs degats, pointsDeVie
+/* la fonction type_Etudiant(int type,Etudiant* e,Jeu* j) permet d'initialiser les attributs degats, pointsDeVie
    et vitesse en fonction de l'attribut type d'Etudiants. */
-void type_Etudiant(int type,Etudiant* e,Liste *l){
+void type_Etudiant(int type,Etudiant* e,Jeu* j){
+    
     switch(type){
         case 'Z':
             e->degats=1;
@@ -63,93 +58,98 @@ void type_Etudiant(int type,Etudiant* e,Liste *l){
             e->pointsDeVie=rand()%7+1;
             e->vitesse=rand()%3+1;
             break;
-        default:
-            printf("type n'existe pas");
-            free(e);
-            liberer_liste(l);
-            //fclose(fichier_vague) apres
-            exit(1);
+            /* il n'y a pas besoin de mettre un cas default car les types d'Etudiant sont déja vérifié
+            dans la fonction fichierConforme de Caffichage */
     }
 }
-/* la fonction placer(FILE* nom_fichier) créer un tableau de Liste d' Etudiant de taille égale au nombre
-    de ligne en lisant le fichier contenant les informations par rapport aux vagues. Elle utilise creer_etu(int type,int ligne,int tour,Liste* l )
+/* la fonction placer(Jeu* jeu,FILE* nom_fichier) chaine doublement les Etudiant
+    dans jeu en lisant le fichier contenant les informations par rapport aux vagues. Elle utilise creer_etu(int type,int ligne,int tour,Jeu* jeu,FILE* nom_fichier )
     pour ajouter ces Etudiants.   */
-Liste* placer(FILE * nom_fichier){
-
-
-Liste*l=malloc(NOMBRE_LIGNES*sizeof(Liste));
-if(l==NULL){
-    printf("erreur d'allocation");
-    fclose(nom_fichier);
-    exit(1); //j'arrete tout le programme
-}
-for(int i=0;i<7;i++){
-l[i].fin=NULL;
-l[i].tete=NULL;
-l[i].prochain=NULL;
-}
-
+void placer(Jeu *jeu,FILE* nom_fichier){
 int tour,ligne;
 char type;
 int header;
 srand(time(NULL));//j'intialise le generateur aleatoire pour le type 'X'
-fscanf(nom_fichier, "%d", &header);
-while (fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type) == 3) { /* tant que l'on a 3 colonnes de la forme tour d'apparition ligne type on 
-                                                                        lit les élèments du fichier, on les mets dans les variables tour,ligne,char et on
-                                                                        les utilise pour créer un nouvel Etudiant */
-    creer_etu(type,ligne,tour,l);
+fscanf(nom_fichier, "%d", &header);//on saute la première ligne ou il y a la cagnotte.
+fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type);
+Etudiant* e=creer_etu(type,tour,ligne,jeu,nom_fichier);
+jeu->etudiants=e;
+jeu->dernier=e;
+jeu->etudiants->next=jeu->dernier;
+while (fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type) == 3) {//tant que le fichier est de la forme tour ligne type on boucle
+    jeu->dernier->next=creer_etu(type,ligne,tour,jeu,nom_fichier);//on chaine doublement le nouveau étudiants avec l'ancien dernier
+    jeu->dernier->next->prev=jeu->dernier;
+    jeu->dernier=jeu->dernier->next; 
     }
-    printf("\n");
-//fclose(fichierMechant);
-return l;
 }
-/* liberer_liste(liste *l) permet de liberer la memoire allouée lors de l'appel de la fonction placer. */
-void liberer_liste(Liste *l){
-    for (int i=0;i<NOMBRE_LIGNES;i++){
-        Etudiant *courant=l[i].tete;
-        while(courant!=l[i].fin){//tant que l'on a pas le dernier Etudiant sur la ligne en passant au prochain Etudiants et en liberant la mémoire de l'étudiant courant.
-            Etudiant* temp=courant;
+/* connecte_ligne(Jeu* jeu) permet de doublement chainer les étudiants entre eux par rapport à leur ligne*/
+void connecte_ligne(Jeu* jeu){
+    for (int i=1;i<=NOMBRE_LIGNES;i++){
+        Etudiant* courant=jeu->etudiants;
+        while(courant!=jeu->dernier && courant->ligne !=i){//on cherche le premier étudiants sur la ligne i
             courant=courant->next;
-            free(temp);
+        }
+        if(courant->next==NULL){//il n'y a pas d'étudiants a la ligne i
+            continue;
+        }else{
+            Etudiant* dernier_ligne=courant; // l'etudiant dernier_ligne pointe sur le dernier etudiants trouvé sur la ligne i
+            courant=courant->next;
+            while(courant!=jeu->dernier){
+                if (courant->ligne==dernier_ligne->ligne){
+                    dernier_ligne->next_line=courant; //on chaine les deux étudiants sur la même ligne
+                    courant->prev_line=dernier_ligne;
+                    dernier_ligne=courant; //le nouveau étudiant trouvé sur la ligne i devient dernier_ligne
+                    courant=courant->next; //on continue de parcourir la liste chainée
+                }else{
+                    courant=courant->next;
+                }
+            }
+            if(jeu->dernier->ligne==dernier_ligne->ligne){//on fait le cas du dernier étudiant
+                dernier_ligne->next_line=jeu->dernier;
+                jeu->dernier->prev_line=dernier_ligne;
+            }
+        }
+    }
+}
+
+/* liberer_liste(Jeu *l) permet de liberer la memoire allouée par la liste chainée d'étudiants */
+void liberer_etudiant(Jeu* j){
+        Etudiant *courant=j->etudiants;
+        while(courant!=j->dernier){
+        Etudiant* temp=courant;
+        courant=courant->next;
+        free(temp);
         }
         free(courant);
     }
-    free(l);
-    
-}
-/* touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne ,Liste *l) permet de de prendre en compte
+/* touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne ,Jeu * jeu) permet  de prendre en compte
     les dégats des tourelles et, dans le cas ou l'Etudiant n'a plus de Points de vie, de le tuer. */
-void touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne ,Liste *l){
+void touche_Etudiant(Etudiant *e, int degat_tourelle, int ligne, Jeu *jeu){
     e->pointsDeVie-=degat_tourelle;
-    if (e->pointsDeVie<=0){ //si l'Etudiant meurt, on l'enlève de la liste et on libere sa mémoire
-        if (l[ligne-1].tete==e){
-            e->next->prev_line=NULL;
-            l[ligne-1].tete=e->next;
-            e->next=NULL;
-            e->next_line=NULL;
-            free(e);
-        }else if(l[ligne-1].fin==e){
-            l[ligne-1].fin=NULL;
-            l[ligne-1].tete=NULL;
-            l[ligne-1].prochain=NULL;
-            free(e);
-        }else{
-            e->prev_line->next=e->next;
-            e->prev_line->next_line=e->next_line;
-            e->next->prev_line=e->prev_line;
-            e->next_line->prev_line=e->prev_line;
-            e->next=NULL;
-            e->next_line=NULL;
-            e->prev_line=NULL;
-            free(e);
+    if (e->pointsDeVie<=0) {
+        if (e->prev!=NULL) {
+            e->prev->next=e->next;
+        }else if (jeu->etudiants==e){
+            jeu->etudiants=e->next; 
         }
+        if (e->next!=NULL) {
+            e->next->prev=e->prev;
+        } else if (jeu->dernier==e) {
+            jeu->dernier=e->prev;
+        }
+        if (e->prev_line!=NULL) {
+            e->prev_line->next_line=e->next_line;
+        }
+        if (e->next_line!=NULL) {
+            e->next_line->prev_line=e->prev_line;
+        }
+        free(e);
     }
 }
-/* avancer(Etudiant* e,Liste *l) fait avancer les Etudiants en fonction de leur vitesse et de la position
-    de l'Etudiant qui le précède.*/
 
-void avancer(Etudiant* e,Liste *l){
-    //si e est le premier de sa ligne, on a pas de problèmes.
+/* avancer(Etudiant* e) fait avancer les Etudiants en fonction de leur vitesse et de la position
+    de l'Etudiant qui le précède.*/
+void avancer(Etudiant* e){
     if (e->prev_line==NULL){
         if(e->type=='M'){
             if(e->avancer_ou_non){
@@ -161,7 +161,7 @@ void avancer(Etudiant* e,Liste *l){
         }else{
             e->position-=e->vitesse;
         }
-        
+        //si e est le premier de sa ligne, on a pas de problèmes.
     }else{
     switch (e->type){
         case 'S':
@@ -204,6 +204,8 @@ void avancer(Etudiant* e,Liste *l){
     }
     }
 }
+
+
 
 
 
