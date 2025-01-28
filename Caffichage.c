@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include "Caffichage.h"
 #include "struct_etud.h"
+#include "struct_jeu.h"
 #include <unistd.h>
-
+#include <string.h>
 //fontion qui affiche un terrain neutre
 void afficheTerrainNeutre()
 {
@@ -57,61 +58,68 @@ void afficheVagues(FILE* fichierVague)
 }
 
 
-/* affichejeu(Liste *l) affiche les Etudiants avec leurs PV tour par tour tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
-void affichejeu(Liste *l){
-    
-    int tour_courant=0;
-    while(l[0].tete!=NULL || l[1].tete!=NULL || l[2].tete!=NULL || l[3].tete!=NULL || l[4].tete!=NULL || l[5].tete!=NULL || l[6].tete!=NULL){
-
-        for (int i = 0; i < NOMBRE_LIGNES; i++){
-            Etudiant *courant=l[i].tete;
-            if(courant!=NULL){// on vérifie si la ligne a des Etudiants ou pas
-                if (l[i].prochain!=NULL){
-                    if (l[i].prochain->tour<=tour_courant){ 
-                            l[i].prochain=l[i].prochain->next;
-                        }
-                }
-                while(courant!=l[i].prochain){
-                    avancer(courant,l);
-                    if(courant->position<=0){
-                        perdu(l);
-                        return;
-                    }
-                    courant=courant->next_line;
-                }
-                courant =l[i].tete;
+/* affichejeu(Jeu *jeu) affiche les Etudiants avec leurs PV tour par tour, tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
+void affichejeu(Jeu *jeu){
+    Etudiant* tab[NOMBRE_LIGNES][15];
+    while(jeu->etudiants!=NULL){
+        memset(tab,0,sizeof(tab));//intitialise tout les éléments de tab à NULL
+        Etudiant *courant=jeu->etudiants;
+        while(courant!=jeu->dernier){
+            if(courant->position<15 && courant->tour<=jeu->tour){
+                tab[(courant->ligne)-1][courant->position]=courant;
+                courant=courant->next;
+            }else{
+                courant=courant->next;
             }
-            printf("%d|", i + 1);
+            if(jeu->dernier->position<15 && jeu->dernier->tour<=jeu->tour){
+                tab[(jeu->dernier->ligne)-1][jeu->dernier->position]=jeu->dernier;
+            }
+        }
+        for (int i = 0; i < NOMBRE_LIGNES; i++){
+            printf("%d|",i+1);
             for (int j = 0; j < 15; j++){
-
-                if(courant!=NULL){
-                    if (courant->position==j){
-                        printf("%3d%c ",courant->pointsDeVie,courant->type);
-                        courant=courant->next_line;
-                    }else{
-                        printf("%4c ", '.');
-                    }
+                if(tab[i][j]!=NULL){
+                        printf("%3d%c ",tab[i][j]->pointsDeVie,tab[i][j]->type);
                 }else{
                     printf("%4c ", '.');
                 }
             }
             printf("\n");
         }
+        jeu->tour+=1;
+        Etudiant *courant1=jeu->etudiants;
+        while(courant1!=jeu->dernier){
+            if( courant1->tour<=jeu->tour){
+                avancer(courant1);
+                if(courant1->position<=0){
+                    perdu(jeu);
+                    exit(1);
+                }
+                courant1=courant1->next;
+            }else{
+                courant1=courant1->next;
+            }
+            if( jeu->dernier->tour<=jeu->tour){
+                avancer(jeu->dernier);
+            }
+        }
         printf("\n");
         printf("\n");
         usleep(500000);
-        tour_courant+=1;
+        
     }
     gagner();
 
 }
 
-//perdu et  gagner a faire mieux apres
+//a faire mieux apres perdu et gagner
 
 /* perdu() s'occupe de l'affichage en cas de victoire*/
-void perdu(){
-    system("clear");
-    printf("vous avez perdu \n");
+void perdu(Jeu* jeu){
+    //system("clear");
+    printf("vous avez perdu gros Neuille\n");
+    liberer_etudiant(jeu);
+    free(jeu);
 }
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void gagner(){
@@ -167,5 +175,3 @@ int fichierConforme(FILE* fichierVague)
     rewind(fichierVague); //si tout va bien, remettre le curseur au debut du fichier
     return 1;
 }
-
-
