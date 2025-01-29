@@ -13,6 +13,19 @@
 #define TOURRELE_ZONE 4
 #define TOURRELE_MUR 5
 
+// Prix tourelles
+#define PRIX_TOURRELE_DE_BASE 100
+#define PRIX_TOURRELE_RALENTISSEUR 150
+#define PRIX_TOURRELE_MINE 80
+#define PRIX_TOURRELE_ZONE 250
+#define PRIX_TOURRELE_MUR 300
+
+// Points de vie tourelles
+#define POINTS_DE_VIE_TOURRELE_DE_BASE 10
+#define POINTS_DE_VIE_TOURRELE_RALENTISSEUR 5
+#define POINTS_DE_VIE_TOURRELE_MINE 3
+#define POINTS_DE_VIE_TOURRELE_ZONE 15
+#define POINTS_DE_VIE_TOURRELE_MUR 20
 
 typedef struct tourelle {
     int type;               // Type de la tourelle
