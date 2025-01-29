@@ -2,7 +2,7 @@
 
 Tourelle *creerTourelle(int ligne, int position, int type)
 {
-    Tourelle *nouvelleTourelle = (Tourelle *)malloc(sizeof(Tourelle));
+    Tourelle *nouvelleTourelle = malloc(sizeof(Tourelle));
     if (!nouvelleTourelle)
     {
         printf("Allocation mémoire pour la tourelle échouée");
