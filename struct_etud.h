@@ -37,4 +37,5 @@ void liberer_etudiant(Jeu* j);
 void touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne,Jeu* jeu);
 void avancer(Etudiant* e);
 void afficher(Jeu *jeu);
+Etudiant * trouver_ligne(Jeu * jeu,int ligne);
 #endif
