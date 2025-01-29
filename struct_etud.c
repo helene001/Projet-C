@@ -5,8 +5,8 @@
 #include "struct_jeu.h"
 #include <string.h>
 
-/*creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier ) créer des Etudiants et les chaines entre eux en fonctions de leurs lignes. 
-Cette fonction est utilisé dans la fonction placer(Jeu* jeu,FILE* nom_fichier)*/
+/*creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier ) créer des Etudiants et les chaines entre eux en fonctions de leurs lignes
+  .Cette fonction est utilisé dans la fonction placer(Jeu* jeu,FILE* nom_fichier)*/
 Etudiant* creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier){
     Etudiant* e=malloc(sizeof(Etudiant));
     if(e==NULL){// si il y'a une erreur d'allocation la mémoire est libéré correctement
@@ -35,27 +35,32 @@ void type_Etudiant(int type,Etudiant* e,Jeu* j){
         case 'Z':
             e->degats=1;
             e->pointsDeVie=5;
+            e->PV_max=5;
             e->vitesse=1;
             break;
         case 'M':
             e->degats=3;
             e->pointsDeVie=9;
+            e->PV_max=9;
             e->vitesse=1;
-            e->avancer_ou_non=1;
+            e->un_sur_2=1;
             break;
-        case 'L':
-            e->degats=5;
-            e->pointsDeVie=5;
-            e->vitesse=2;
+        case 'D':
+            e->degats=1;
+            e->pointsDeVie=3;
+            e->PV_max=3;
+            e->vitesse=1;
             break;
         case 'S':
             e->degats=1;
             e->pointsDeVie=3;
+            e->PV_max=3;
             e->vitesse=4;
             break;
         case 'X':
             e->degats=rand()%4+1;
             e->pointsDeVie=rand()%7+1;
+            e->PV_max=e->pointsDeVie;
             e->vitesse=rand()%3+1;
             break;
             /* il n'y a pas besoin de mettre un cas default car les types d'Etudiant sont déja vérifié
@@ -152,11 +157,11 @@ void touche_Etudiant(Etudiant *e, int degat_tourelle, int ligne, Jeu *jeu){
 void avancer(Etudiant* e){
     if (e->prev_line==NULL){
         if(e->type=='M'){
-            if(e->avancer_ou_non){
+            if(e->un_sur_2){
                     e->position-=1;
-                    e->avancer_ou_non=0; /* e n'avancera pas au prochain affichage*/
+                    e->un_sur_2=0; /* e n'avancera pas au prochain affichage*/
                 }else{
-                    e->avancer_ou_non=1;
+                    e->un_sur_2=1;
                 }
         }else{
             e->position-=e->vitesse;
@@ -186,14 +191,34 @@ void avancer(Etudiant* e){
             break;
         case 'M':
             if (e->position-1>e->prev_line->position){
-                if(e->avancer_ou_non){
+                if(e->un_sur_2){
                     e->position-=1;
-                    e->avancer_ou_non=0; /* e n'avancera pas au prochain affichage*/
+                    e->un_sur_2=0; /* e n'avancera pas au prochain affichage*/
                 }else{
-                    e->avancer_ou_non=1;
+                    e->un_sur_2=1;
                 }
             }else{
-                e->avancer_ou_non=1;
+                e->un_sur_2=1;
+            }
+            break;
+        case 'D' :
+            Etudiant *prochain_ligne= e->next_line;
+            Etudiant *precede_ligne= e->prev_line;
+            /* le docteur soigne toute sa ligne*/
+            while(prochain_ligne!=NULL){
+                if(prochain_ligne->pointsDeVie<prochain_ligne->PV_max){
+                    prochain_ligne->pointsDeVie+=1;
+                }
+                prochain_ligne=prochain_ligne->next_line;
+            }
+            while(precede_ligne!=NULL){
+                if(precede_ligne->pointsDeVie<precede_ligne->PV_max){
+                    precede_ligne->pointsDeVie+=1;
+                }
+                precede_ligne=precede_ligne->prev_line;
+            }
+            if (e->position-1>e->prev_line->position){
+                e->position-=1;
             }
             break;
         default :
