@@ -131,25 +131,40 @@ void liberer_etudiant(Jeu* j){
     les dégats des tourelles et, dans le cas ou l'Etudiant n'a plus de Points de vie, de le tuer. */
 void touche_Etudiant(Etudiant *e, int degat_tourelle, int ligne, Jeu *jeu){
     e->pointsDeVie-=degat_tourelle;
-    if (e->pointsDeVie<=0) {
-        if (e->prev!=NULL) {
+    if (e->pointsDeVie<=0) {//si l'étudiant meurt, on l'enlève de la liste chainée
+        if (e->prev!=NULL) { //si ce n'est le premier de la chaine
             e->prev->next=e->next;
-        }else if (jeu->etudiants==e){
+        }else if (jeu->etudiants==e){ //si c'est le premier de la liste
             jeu->etudiants=e->next; 
         }
-        if (e->next!=NULL) {
+        if (e->next!=NULL) {//si ce n'est pas le dernier de la liste
             e->next->prev=e->prev;
-        } else if (jeu->dernier==e) {
+        } else if (jeu->dernier==e) {//si c'est le dernier de la liste
             jeu->dernier=e->prev;
         }
-        if (e->prev_line!=NULL) {
+        if (e->prev_line!=NULL) {//si ce n'est pas le premier de sa ligne
             e->prev_line->next_line=e->next_line;
         }
-        if (e->next_line!=NULL) {
+        if (e->next_line!=NULL) {//si ce n'est pas le dernier de sa ligne
             e->next_line->prev_line=e->prev_line;
         }
         free(e);
     }
+}
+/* Cette fonction permet de retrouver facilement le premier étudiant sur sa ligne*/
+Etudiant * trouver_ligne(Jeu * jeu,int ligne){
+    Etudiant * courant=jeu->etudiants;
+    while(courant!=NULL){//
+        if (courant->ligne==ligne){
+            while(courant->prev_line!=NULL){//si ce n'est pas le premier sur sa ligne, on recule sur la ligne
+                courant=courant->prev_line;
+            }
+            return courant;
+        }else{
+            courant=courant->next;
+        }
+    }
+    return NULL;
 }
 
 /* avancer(Etudiant* e) fait avancer les Etudiants en fonction de leur vitesse et de la position
