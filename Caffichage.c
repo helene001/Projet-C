@@ -165,7 +165,7 @@ int fichierConforme(FILE* fichierVague)
             printf("Espaces entre les positions non conformes.\n");
             return 0;
         }
-        else if ((chainePositions[4] != 'Z') && (chainePositions[4] != 'M') && (chainePositions[4] != 'L') && (chainePositions[4] != 'S') && (chainePositions[4] != 'X'))
+        else if ((chainePositions[4] != 'Z') && (chainePositions[4] != 'M') && (chainePositions[4] != 'D') && (chainePositions[4] != 'S') && (chainePositions[4] != 'X'))
         {
             printf("Type non conforme.\n");
             return 0;
