@@ -13,17 +13,21 @@ typedef struct jeu Jeu;
 typedef struct etudiant {
 int type;
 int pointsDeVie;
+int PV_max;
 int ligne;
 int position;
 int vitesse;
 int degats;
 int tour;
-int avancer_ou_non; //permet de controller la vitesse du type d'Etudiant 'M' (avance si avancer_ou_non=1)
+int un_sur_2; //permet de controller les évenements qui doivent arriver une fois sur 2 comme la vitesse du type d'Etudiant 'M' (avance si avancer_ou_non=1) ou les soins du type 'D'
 struct etudiant* next;
 struct etudiant* prev;
 struct etudiant* next_line;
 struct etudiant* prev_line;
 } Etudiant;
+
+
+
 
 Etudiant* creer_etu(int type,int ligne,int tour,Jeu* jeu,FILE* nom_fichier);
 void placer(Jeu* jeu,FILE * nom_fichier);
