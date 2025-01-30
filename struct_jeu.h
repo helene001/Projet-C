@@ -8,7 +8,8 @@
 typedef struct tourelle Tourelle;
 typedef struct etudiant Etudiant;
 typedef struct jeu{ 
-    //Tourelle* tourelles; 
+    Tourelle* tourelles; 
+    Tourelle* derniere; 
     Etudiant* etudiants; 
     Etudiant* dernier;
     int cagnotte; 
