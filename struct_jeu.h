@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+typedef struct tourelle Tourelle;
 typedef struct etudiant Etudiant;
 typedef struct jeu{ 
     //Tourelle* tourelles; 
