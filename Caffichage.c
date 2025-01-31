@@ -3,6 +3,7 @@
 #include "Caffichage.h"
 #include "struct_etud.h"
 #include "struct_jeu.h"
+#include "Tourelle.h"
 #include <unistd.h>
 #include <string.h>
 //fontion qui affiche un terrain neutre
@@ -61,6 +62,7 @@ void afficheVagues(FILE* fichierVague)
 /* affichejeu(Jeu *jeu) affiche les Etudiants avec leurs PV tour par tour, tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
 void affichejeu(Jeu *jeu){
     Etudiant* tab[NOMBRE_LIGNES][15];
+
     while(jeu->etudiants!=NULL){
         memset(tab,0,sizeof(tab));//intitialise tout les éléments de tab à NULL
         Etudiant *courant=jeu->etudiants;
@@ -78,8 +80,15 @@ void affichejeu(Jeu *jeu){
         for (int i = 0; i < NOMBRE_LIGNES; i++){
             printf("%d|",i+1);
             for (int j = 0; j < 15; j++){
-                if(tab[i][j]!=NULL){
-                        printf("%3d%c ",tab[i][j]->pointsDeVie,tab[i][j]->type);
+                Tourelle *t=trouver_pos_exacte_tour(jeu,i+1,j);
+                Etudiant *e=trouver_pos_exacte_etu(jeu,i+1,j);
+                if(t!=NULL || e!=NULL){
+                    if(t!=NULL){
+                        printf("%3d%c ",t->pointsDeVie,t->type);
+                    }
+                    if(e!=NULL){
+                        printf("%3d%c ",e->pointsDeVie,e->type);
+                    }
                 }else{
                     printf("%4c ", '.');
                 }
@@ -87,11 +96,12 @@ void affichejeu(Jeu *jeu){
             printf("\n");
         }
         jeu->tour+=1;
+        actionsTourelles(jeu);
         Etudiant *courant1=jeu->etudiants;
         while(courant1!=jeu->dernier){
             if( courant1->tour<=jeu->tour){
-                avancer(courant1);
-                if(courant1->position<=0){
+                avancer(courant1,jeu);
+                if(courant1->position<0){
                     perdu(jeu);
                     exit(1);
                 }
@@ -100,12 +110,13 @@ void affichejeu(Jeu *jeu){
                 courant1=courant1->next;
             }
             if( jeu->dernier->tour<=jeu->tour){
-                avancer(jeu->dernier);
+                avancer(jeu->dernier,jeu);
             }
         }
-        printf("\n");
-        printf("\n");
         usleep(500000);
+        //system("clear");
+        printf("\n");
+        printf("\n");
         
     }
     gagner();
@@ -124,7 +135,7 @@ void perdu(Jeu* jeu){
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void gagner(){
     system("clear");
-    printf("vous avez gagner");
+    printf("vous avez gagné");
 }
 
 //fonction qui verifie si le fichier est conforme
