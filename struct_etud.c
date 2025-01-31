@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "struct_jeu.h"
+#include "Tourelle.h"
 #include <string.h>
 
 /*creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier ) créer des Etudiants et les chaines entre eux en fonctions de leurs lignes
@@ -24,8 +25,8 @@ Etudiant* creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier){
     e->prev=NULL;
     e->ligne=ligne;
     e->tour=tour;
-    e->position=15; 
-
+    e->position=15;
+    return e;
 }
 /* la fonction type_Etudiant(int type,Etudiant* e,Jeu* j) permet d'initialiser les attributs degats, pointsDeVie
    et vitesse en fonction de l'attribut type d'Etudiants. */
@@ -49,6 +50,7 @@ void type_Etudiant(int type,Etudiant* e,Jeu* j){
             e->degats=1;
             e->pointsDeVie=3;
             e->PV_max=3;
+            e->un_sur_2=1;
             e->vitesse=1;
             break;
         case 'S':
@@ -151,12 +153,12 @@ void touche_Etudiant(Etudiant *e, int degat_tourelle, int ligne, Jeu *jeu){
         free(e);
     }
 }
-/* Cette fonction permet de retrouver facilement le premier étudiant sur sa ligne*/
-Etudiant * trouver_ligne(Jeu * jeu,int ligne){
+/* trouver_ligne(Jeu * jeu,int ligne) permet de retrouver facilement le premier étudiant sur sa ligne*/
+Etudiant * trouver_ligne_etu(Jeu * jeu,int ligne){
     Etudiant * courant=jeu->etudiants;
-    while(courant!=NULL){//
+    while(courant!=NULL){
         if (courant->ligne==ligne){
-            while(courant->prev_line!=NULL){//si ce n'est pas le premier sur sa ligne, on recule sur la ligne
+            while(courant->prev_line!=NULL){
                 courant=courant->prev_line;
             }
             return courant;
@@ -166,10 +168,24 @@ Etudiant * trouver_ligne(Jeu * jeu,int ligne){
     }
     return NULL;
 }
+/* trouver_pos_exacte_etu(Jeu * jeu,int ligne,int pos) permet de retrouver facilement l'étudiant a une certaine position exacte*/
+Etudiant * trouver_pos_exacte_etu(Jeu * jeu,int ligne,int pos){
+    Etudiant *courant=trouver_ligne_etu(jeu,ligne);
+    while(courant!=NULL){
+        if(courant->position==pos){
+            return courant;
+        }
+        else{
+            courant=courant->next_line;
+        }
+    }
+    return NULL;
+}
+
 
 /* avancer(Etudiant* e) fait avancer les Etudiants en fonction de leur vitesse et de la position
     de l'Etudiant qui le précède.*/
-void avancer(Etudiant* e){
+void avancer(Etudiant* e,Jeu*jeu){
     if (e->prev_line==NULL){
         if(e->type=='M'){
             if(e->un_sur_2){
@@ -179,9 +195,22 @@ void avancer(Etudiant* e){
                     e->un_sur_2=1;
                 }
         }else{
+            //int vit=1;
+            /*
+            while(vit<e->vitesse){
+            Tourelle *t=trouver_pos_exacte_tour(jeu,e->ligne ,e->position-vit);
+            if(trouver_pos_exacte_tour(jeu,e->ligne ,e->position-vit)){
+                e->position-=(vit+1);//on avance jusqua s epositionner juste devant la tourelle
+                toucher_Tourelle(jeu,t,e->degats);
+                
+            }else{
+                vit+=1;
+            }
+            }
+            */
             e->position-=e->vitesse;
         }
-        //si e est le premier de sa ligne, on a pas de problèmes.
+        
     }else{
     switch (e->type){
         case 'S':
@@ -217,24 +246,31 @@ void avancer(Etudiant* e){
             }
             break;
         case 'D' :
-            Etudiant *prochain_ligne= e->next_line;
-            Etudiant *precede_ligne= e->prev_line;
-            /* le docteur soigne toute sa ligne*/
-            while(prochain_ligne!=NULL){
-                if(prochain_ligne->pointsDeVie<prochain_ligne->PV_max){
-                    prochain_ligne->pointsDeVie+=1;
+            if(e->un_sur_2){
+                Etudiant *prochain_ligne= e->next_line;
+                Etudiant *precede_ligne= e->prev_line;
+                /* le docteur soigne toute sa ligne une fois sur deux*/
+                while(prochain_ligne!=NULL){
+                    if(prochain_ligne->pointsDeVie<prochain_ligne->PV_max){
+                        prochain_ligne->pointsDeVie+=1;
+                    }
+                    prochain_ligne=prochain_ligne->next_line;
                 }
-                prochain_ligne=prochain_ligne->next_line;
+                while(precede_ligne!=NULL){
+                    if(precede_ligne->pointsDeVie<precede_ligne->PV_max){
+                        precede_ligne->pointsDeVie+=1;
+                    }
+                    precede_ligne=precede_ligne->prev_line;
+                }
+                e->un_sur_2=0;
             }
-            while(precede_ligne!=NULL){
-                if(precede_ligne->pointsDeVie<precede_ligne->PV_max){
-                    precede_ligne->pointsDeVie+=1;
-                }
-                precede_ligne=precede_ligne->prev_line;
+            else{
+                e->un_sur_2=1;
             }
             if (e->position-1>e->prev_line->position){
                 e->position-=1;
             }
+
             break;
         default :
             if (e->position-1>e->prev_line->position){
