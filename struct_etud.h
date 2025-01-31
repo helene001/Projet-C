@@ -35,7 +35,10 @@ void connecte_ligne(Jeu* jeu);
 void type_Etudiant(int type,Etudiant* e,Jeu *j);
 void liberer_etudiant(Jeu* j);
 void touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne,Jeu* jeu);
-void avancer(Etudiant* e);
+void avancer(Etudiant* e,Jeu *jeu);
 void afficher(Jeu *jeu);
-Etudiant * trouver_ligne(Jeu * jeu,int ligne);
+Etudiant * trouver_ligne_etu(Jeu * jeu,int ligne);
+Etudiant *trouver_pos_exacte_etu(Jeu *jeu, int ligne, int pos);
+
+
 #endif
