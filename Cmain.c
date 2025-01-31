@@ -3,7 +3,7 @@
 #include "Caffichage.h"
 #include "struct_etud.h"
 #include "struct_jeu.h"
-#include "tourelle.h"
+#include "Tourelle.h"
 #include <time.h>
 #include <string.h>
 #define TAILLE_MAX 100
@@ -28,11 +28,15 @@ int main(int argc, char* argv[])
         jeu->tour=0;
         jeu->cagnotte=atoi(cagnotte);
         jeu->tourelles=NULL;
+        jeu->derniere=NULL;
+        jeu->etudiants=NULL;
+        jeu->dernier=NULL;
         chainage_tourelle(jeu);
         placer(jeu,fichierVague);
         connecte_ligne(jeu);
         fclose(fichierVague);
         affichejeu(jeu);
+        liberer_tourelle(jeu);
         liberer_etudiant(jeu);
         free(jeu);
         
