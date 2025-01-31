@@ -119,7 +119,7 @@ void supprimerTourelle(Jeu* jeu, Tourelle* t)
 */
 void attaquerLigne(Jeu *jeu, Tourelle *tourelle)
 {
-    const int degats = 3;
+    const int degats = 1;
     Etudiant *ennemi = jeu->etudiants;
 
     while (ennemi)      
