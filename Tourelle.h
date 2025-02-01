@@ -24,27 +24,16 @@ typedef struct tourelle {
 } Tourelle;
 
 
-// =====================================
-//          Fonctions Tourelles
-// =====================================
-
-//      Création de Tourelle
 Tourelle *creerTourelle(int ligne, int position, int type,Jeu* jeu);
 
-//      Contact Tourelles
 
-//void contactTourelles(Jeu *jeu);
-
-//      Attaque Tourelles
 void attaquerT(Jeu *jeu, Tourelle *tourelle);
 
-//      Ralentire Tourelles
 void ralentirEnnemi(Jeu *jeu, Tourelle *tourelle);
 
-//      Action Tourelles
+
 void actionsTourelles(Jeu *jeu);
 
-//      Attaquer Zone
 void attaquerZone(Jeu *jeu, Tourelle *tourelle);
 
 void chainage_tourelle(Jeu * jeu);
@@ -53,8 +42,7 @@ void toucher_Tourelle(Jeu *jeu,Tourelle* tourelle,int degat);
 
 Tourelle *trouver_pos_exacte_tour(Jeu* jeu,int ligne ,int pos);
 
-
-void liberer_tourelle(Jeu* j);
+void liberer_tourelle(Jeu* jeu);
 
 
 #endif
