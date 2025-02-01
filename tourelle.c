@@ -172,14 +172,15 @@ void chainage_tourelle(Jeu * jeu){
         //Si on a surmonté tout les problèmes possibles précedent, on ajoute la nouvelle tourelle aux autre tourelles
         Tourelle* t=creerTourelle(ligne,position,i,jeu);
         jeu->nombre_tourelles+=1;
-        if(jeu->tourelles==NULL){//si c'est la première
+        
+        if (jeu->tourelles==NULL) {
             jeu->tourelles=t;
             jeu->derniere=t;
-            jeu->tourelles->next=jeu->derniere;
-            
-        }else{
-        jeu->derniere->next=t;
-        jeu->derniere=t;
+            t->next=NULL; // Le tout premier, et donc dernier, a next = NULL
+        } else {
+            jeu->derniere->next=t;
+            jeu->derniere=t;
+            t->next=NULL;
         }
         jeu->cagnotte-=t->prix;//on enlève le prix de notre tourelle à la cagnotte
         tab[t->ligne-1][t->position]=t;//on place notre tourelle dans un tableau temporaire.
@@ -221,8 +222,12 @@ void toucher_Tourelle(Jeu *jeu,Tourelle* tourelle,int degat){
     }
     tourelle->pointsDeVie-=degat;//on décrémente les PV avec les dégats de l'étudiant
     if(tourelle->pointsDeVie<=0){//si la tourelle est détruite
-        if(tourelle->type=='*'){//si c'est une mine
-            Etudiant *e=trouver_pos_exacte_etu(jeu,tourelle->ligne,tourelle->position+1);//on trouve l'étudiant qui à marché sur la mine
+        Etudiant *e=trouver_pos_exacte_etu(jeu,tourelle->ligne,tourelle->position+1);
+        if(e && e->type=='K'){//si e est un kamikaze, il faut le faire exploser
+            touche_Etudiant(e ,e->degats,e->ligne,jeu);
+        }
+        else if(tourelle->type=='*'){//si c'est une mine
+            //Etudiant *e=trouver_pos_exacte_etu(jeu,tourelle->ligne,tourelle->position+1);//on trouve l'étudiant qui à marché sur la mine
             if(e){//si il existe
                 touche_Etudiant(e ,tourelle->degats,e->ligne,jeu);//on inflige les dégats de la mine à e
                 
