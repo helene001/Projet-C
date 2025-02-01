@@ -30,14 +30,23 @@ struct etudiant* prev_line;
 
 
 Etudiant* creer_etu(int type,int ligne,int tour,Jeu* jeu,FILE* nom_fichier);
+
 void placer(Jeu* jeu,FILE * nom_fichier);
+
 void connecte_ligne(Jeu* jeu);
+
 void type_Etudiant(int type,Etudiant* e,Jeu *j);
+
 void liberer_etudiant(Jeu* j);
+
 void touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne,Jeu* jeu);
+
 void avancer(Etudiant* e,Jeu *jeu);
+
 void afficher(Jeu *jeu);
+
 Etudiant * trouver_ligne_etu(Jeu * jeu,int ligne);
+
 Etudiant *trouver_pos_exacte_etu(Jeu *jeu, int ligne, int pos);
 
 
