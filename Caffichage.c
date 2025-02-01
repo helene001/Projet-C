@@ -136,7 +136,7 @@ void affichejeu(Jeu *jeu){
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void perdu(Jeu* jeu){
     system("clear");//si vous souhaiter voir toute les étapes mettez cette ligne en commentaire
-    printf("vous avez perdu gros Neuille\n");
+    printf("Vous avez perdu gros Neuille\n");
     liberer_tourelle(jeu);
     liberer_etudiant(jeu);
     free(jeu);
@@ -147,7 +147,7 @@ void gagner(Jeu* jeu){
     liberer_etudiant(jeu);
     liberer_tourelle(jeu);
     free(jeu);
-    printf("vous avez gagné\n");
+    printf("Vous avez gagné\n");
 }
 
 //fonction qui verifie si le fichier est conforme
