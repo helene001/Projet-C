@@ -2,6 +2,7 @@
 #define STRUCT_JEU_H
 
 
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -14,7 +15,8 @@ typedef struct jeu{
     Etudiant* dernier;
     int cagnotte; 
     int tour; 
+    int nombre_tourelles;
+    int nombre_etudiant;
     } Jeu;
-
 
 #endif
