@@ -10,6 +10,7 @@
 //#define Fichier_vague ... a faire quand on aura plusieurs mode de jeu pour bonne gestion memoire en cas d 'erreur
 int main(int argc, char* argv[])
 {
+    afficher_meilleurs_scores();
     FILE* fichierVague = NULL;
     //choix du niveau et ouverture fichier correspondant
     int choixNiveau = 0;
