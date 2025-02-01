@@ -161,6 +161,24 @@ void touche_Etudiant(Etudiant *e, int degat_tourelle, int ligne, Jeu *jeu){
             e->next_line->prev_line=e->prev_line;
         }
         jeu->nombre_etudiant-=1;
+        //en fonction du type d'étudiant et du tour courant, le score est plus ou moins élevé.
+        switch(e->type){
+            case 'Z':
+                jeu->score+=50 +100/jeu->tour;
+                break;
+            case 'M':
+                jeu->score+=200 +100/jeu->tour;
+                break;
+            case 'S':
+                jeu->score+=75 +100/jeu->tour;
+                break;
+            case 'D':
+                jeu->score+=100 +100/jeu->tour;
+                break;
+            case 'X':
+                jeu->score+=150 +100/jeu->tour;
+                break;
+        }
         free(e);
     }
 }
@@ -316,13 +334,6 @@ void avancer(Etudiant* e,Jeu*jeu){
         exit(1);
         }
 }
-
-
-
-
-
-
-
 
 
 
