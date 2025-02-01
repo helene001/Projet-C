@@ -107,7 +107,7 @@ void affichejeu(Jeu *jeu){
         actionsTourelles(jeu);//on actionne les tourelles
         Etudiant *courant1=jeu->etudiants;
         //on boucle sur tout les étudiants en les faisants avancer
-        while(courant1!=jeu->dernier){
+        while(courant1!=NULL){
             if( courant1->tour<=jeu->tour){//si l'étudiant courant est sur le terrain de jeu ou peut y rentrer
                 Etudiant * tmp=courant1;
                 /*on utilise une variable temporaire pour pouvoir passer au prochain étudiant
@@ -120,11 +120,8 @@ void affichejeu(Jeu *jeu){
             }else{
                 courant1=courant1->next;
             }
-            if( jeu->dernier->tour<=jeu->tour){//on fait le cas du dernier étudiant
-                avancer(jeu->dernier,jeu);
-            }
         }
-        usleep(1000000);
+        usleep(500000);
         //system("clear");
         printf("\n");
         printf("\n");
@@ -193,7 +190,7 @@ int fichierConforme(FILE* fichierVague)
             printf("Espaces entre les positions non conformes.\n");
             return 0;
         }
-        else if ((chainePositions[4] != 'Z') && (chainePositions[4] != 'M') && (chainePositions[4] != 'D') && (chainePositions[4] != 'S') && (chainePositions[4] != 'X'))
+        else if ((chainePositions[4] != 'K') && (chainePositions[4] != 'Z') && (chainePositions[4] != 'M') && (chainePositions[4] != 'D') && (chainePositions[4] != 'S') && (chainePositions[4] != 'X'))
         {
             printf("Type non conforme.\n");
             return 0;
@@ -203,26 +200,27 @@ int fichierConforme(FILE* fichierVague)
     rewind(fichierVague); //si tout va bien, remettre le curseur au debut du fichier
     return 1;
 }
-/* le tri par insertion est utilié dans meilleur_score*/
+/* le tri par insertion en ordre decroissant est utilié dans meilleurs_scores*/
 void tri_par_insertion(int tab[], int taille) {
     for (int i=1;i<taille;i++) {
         int cle=tab[i];
         int j=i-1;
 
         // Déplacer les éléments du tableau[0..i-1] plus grands que cle
-        while (j>= 0 && tab[j]> cle) {
+        while (j>= 0 && tab[j]< cle) {
             tab[j+1] = tab[j];
             j--;
         }
         tab[j+1] = cle;
     }
 }
+
+
 void ajouter_meilleurs_scores(int nv_score){
     FILE *fichier = fopen("meilleur_score.txt", "r");
     
     int taille=10;
     int tab[10]={-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-    int tour,ligne;
     char debut[20];
     fgets(debut,sizeof(debut),fichier);//on saute la première ligne ou il y a la cagnotte.
     int score;
@@ -269,8 +267,8 @@ void afficher_meilleurs_scores(){
         if(!fichier){ //on crée le fichier si il n'existe pas
         fichier= fopen("meilleur_score.txt", "w");
         fputs("Meilleurs scores: \n", fichier);
-        fclose(fichier);
         }
+        fclose(fichier);
         return;
     }
     int score;
