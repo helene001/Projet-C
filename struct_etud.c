@@ -9,7 +9,7 @@
 
 /*creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier ) créer des Etudiants et les chaines entre eux en fonctions de leurs lignes
   .Cette fonction est utilisé dans la fonction placer(Jeu* jeu,FILE* nom_fichier)*/
-Etudiant* creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier){
+Etudiant* creer_etu(int type,int tour,int ligne,Jeu* jeu ,FILE* nom_fichier){
     Etudiant* e=malloc(sizeof(Etudiant));
     if(e==NULL){// si il y'a une erreur d'allocation la mémoire est libéré correctement
         printf("erreur d'allocation");
@@ -67,6 +67,11 @@ void type_Etudiant(int type,Etudiant* e,Jeu* j){
             e->PV_max=e->pointsDeVie;
             e->vitesse=rand()%3+1;
             break;
+        case 'K':
+            e->degats=10;
+            e->pointsDeVie=2;
+            e->PV_max=2;
+            e->vitesse=3;
             /* il n'y a pas besoin de mettre un cas default car les types d'Etudiant sont déja vérifié
             dans la fonction fichierConforme de Caffichage */
     }
@@ -87,10 +92,10 @@ Etudiant* e=creer_etu(type,tour,ligne,jeu,nom_fichier);
 jeu->nombre_etudiant+=1;
 jeu->etudiants=e;
 jeu->dernier=e;
-jeu->etudiants->next=jeu->dernier;
+jeu->etudiants->next=NULL;;
 
 while (fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type) == 3) {//tant que le fichier est de la forme tour ligne type on boucle
-    jeu->dernier->next=creer_etu(type,ligne,tour,jeu,nom_fichier);//on chaine doublement le nouveau étudiants avec l'ancien dernier
+    jeu->dernier->next=creer_etu(type,tour,ligne,jeu,nom_fichier);//on chaine doublement le nouveau étudiants avec l'ancien dernier
     jeu->dernier->next->prev=jeu->dernier;
     jeu->dernier=jeu->dernier->next; 
     jeu->nombre_etudiant+=1;
@@ -98,6 +103,7 @@ while (fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type) == 3) {//tant que l
 
 }
 /* connecte_ligne(Jeu* jeu) permet de doublement chainer les étudiants entre eux par rapport à leur ligne*/
+
 void connecte_ligne(Jeu* jeu){
     for (int i=1;i<=NOMBRE_LIGNES;i++){
         Etudiant* courant=jeu->etudiants;
@@ -126,6 +132,8 @@ void connecte_ligne(Jeu* jeu){
         }
     }
 }
+
+
 
 /* liberer_liste(Jeu *l) permet de liberer la memoire allouée par la liste chainée d'étudiants */
 void liberer_etudiant(Jeu* j){
@@ -161,25 +169,106 @@ void touche_Etudiant(Etudiant *e, int degat_tourelle, int ligne, Jeu *jeu){
             e->next_line->prev_line=e->prev_line;
         }
         jeu->nombre_etudiant-=1;
-        //en fonction du type d'étudiant et du tour courant, le score est plus ou moins élevé.
-        switch(e->type){
-            case 'Z':
-                jeu->score+=50 +100/jeu->tour;
-                break;
-            case 'M':
-                jeu->score+=200 +100/jeu->tour;
-                break;
-            case 'S':
-                jeu->score+=75 +100/jeu->tour;
-                break;
-            case 'D':
-                jeu->score+=100 +100/jeu->tour;
-                break;
-            case 'X':
-                jeu->score+=150 +100/jeu->tour;
-                break;
+        if(e->type=='K'){//si c'est le type kamikaze, son explosion on doit faire des dégats autour du zombie
+            if(e->ligne==1){//on fait le cas de si le kamikaze est sur la première ligne,on va donc pas chercher d'étudiant ou tourelle au dessus
+                Etudiant * e1=trouver_pos_exacte_etu(jeu,e->ligne+1,e->position);//on cherche l'étudiant juste en dessous de e
+                if(e1&&e1->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
+                    touche_Etudiant(e1,e->degats,e->ligne,jeu);
+                }
+                Tourelle *t1=trouver_pos_exacte_tour(jeu,e->ligne+1,e->position);//il peut il y a voir une tourelle si il n y a pas d étudiants
+                if(t1&&t1->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
+                    
+                    toucher_Tourelle(jeu,t1,e->degats);
+                }
+                if(e->position<13){//on vérifie qu'il peut y a voir quelq'un après e
+                    Etudiant * e3=trouver_pos_exacte_etu(jeu,e->ligne+1,e->position+1);
+                    if(e3&&e3->position<15){
+                        touche_Etudiant(e3,e->degats,e->ligne,jeu);//on lui inflige des dégats
+                    }
+                    Tourelle *t2=trouver_pos_exacte_tour(jeu,e->ligne+1,e->position+1);//il peut il y a voir une tourelle si il n y a pas d étudiants
+                    if(t2&&t2->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
+                        
+                        toucher_Tourelle(jeu,t2,e->degats);
+                    }
+                }
+            }else if(e->ligne==7){
+                Etudiant * e1=trouver_pos_exacte_etu(jeu,e->ligne-1,e->position);//on cherche l'étudiant juste en dessous de e
+                if(e1&&e1->position<15){
+                    touche_Etudiant(e1,e->degats,e->ligne,jeu);
+                }
+                Tourelle *t1=trouver_pos_exacte_tour(jeu,e->ligne-1,e->position);//il peut il y a voir une tourelle si il n y a pas d étudiants
+                if(t1&&t1->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
+                    
+                    toucher_Tourelle(jeu,t1,e->degats);
+                }
+                if(e->position<13){//on vérifie qu'il peut y a voir quelq'un après e
+                    Etudiant * e3=trouver_pos_exacte_etu(jeu,e->ligne,e->position+1);
+                    if(e3&&e3->position<15){
+                        touche_Etudiant(e3,e->degats,e->ligne,jeu);
+                    }
+                    Tourelle *t3=trouver_pos_exacte_tour(jeu,e->ligne+1,e->position);//il peut il y a voir une tourelle si il n y a pas d étudiants
+                    if(t3&&t3->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
+                        
+                        toucher_Tourelle(jeu,t3,e->degats);
+                    }
+                }
+            }else{
+                Etudiant * e1=trouver_pos_exacte_etu(jeu,e->ligne-1,e->position);//on cherche l'étudiant juste en dessous de e
+                if(e1&&e1->position<15){
+                    touche_Etudiant(e1,e->degats,e->ligne,jeu);
+                }
+                Tourelle *t1=trouver_pos_exacte_tour(jeu,e->ligne-1,e->position);//il peut il y a voir une tourelle si il n y a pas d étudiants
+                if(t1&&t1->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
+                    
+                    toucher_Tourelle(jeu,t1,e->degats);
+                }
+                if(e->position>0){//on vérifie qu'il peut y a voir quelq'un avant e
+                    Etudiant * e2=trouver_pos_exacte_etu(jeu,e->ligne,e->position-1);
+                    if(e2&&e2->position<15){
+                        touche_Etudiant(e2,e->degats,e->ligne,jeu);
+                    }
+                    
+                }
+                if(e->position<13){//on vérifie qu'il peut y a voir quelq'un après e
+                    Tourelle *t3=trouver_pos_exacte_tour(jeu,e->ligne,e->position+1);
+                    if(t3&&t3->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
+                        
+                        toucher_Tourelle(jeu,t3,e->degats);
+                    }
+                }
+                Etudiant * e4=trouver_pos_exacte_etu(jeu,e->ligne+1,e->position);//on cherche l'étudiant juste au dessus de e
+                if(e4&&e4->position<15){
+                    touche_Etudiant(e4,e->degats,e->ligne,jeu);
+                }
+                Tourelle *t4=trouver_pos_exacte_tour(jeu,e->ligne+1,e->position);//il peut il y a voir une tourelle si il n y a pas d étudiants
+                if(t4&&t4->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
+            
+                    toucher_Tourelle(jeu,t4,e->degats);
+                }
+            }
         }
-        free(e);
+        //en fonction du type d'étudiant et du tour courant, le score est plus ou moins élevé.
+    switch(e->type){
+        case 'Z':
+            jeu->score+=50 +100/jeu->tour;
+            break;
+        case 'M':
+            jeu->score+=200 +100/jeu->tour;
+            break;
+        case 'S':
+            jeu->score+=75 +100/jeu->tour;
+            break;
+        case 'D':
+            jeu->score+=100 +100/jeu->tour;
+            break;
+        case 'X':
+            jeu->score+=150 +100/jeu->tour;
+            break;
+        case 'K':
+            jeu->score+=75 +100/jeu->tour;
+            break;
+        }
+    free(e);
     }
 }
 /* trouver_ligne(Jeu * jeu,int ligne) permet de retrouver facilement le premier étudiant sur sa ligne*/
@@ -220,8 +309,8 @@ void avancer(Etudiant* e,Jeu*jeu){
             if(e->un_sur_2){//le type M avance une fois sur 2
                 int vit=1;
                 /* a chaque itération de la boucle, on regarde si il y'a une tourelle a la position de l'etudiant -vit.
-                    S'il y en a une on apelle toucher_Tourelle sinon si on est a la vitesse de e on arrete la boucle, et  si
-                    on incrémente vit et on recommence.
+                    S'il y en a une on apelle toucher_Tourelle, sinon si on est a la vitesse de e on arrete la boucle,
+                    et sinon on incrémente vit et on recommence.
                 */
                 while(vit<=e->vitesse){
                     Tourelle *t=trouver_pos_exacte_tour(jeu,e->ligne ,e->position-vit);
@@ -263,6 +352,19 @@ void avancer(Etudiant* e,Jeu*jeu){
     switch (e->type){
         case 'S':
             //Je gère l'avancé de e en regardant la distance de l'étudiant devant lui.
+            if (e->position-4>e->prev_line->position){ /* je vérifie si il n'y a pas un autre etudiant qui peut gêner e*/
+                e->position-=4;
+            }
+            if (e->position-3>e->prev_line->position){ 
+                e->position-=3;
+            }else if(e->position-2>e->prev_line->position){
+                e->position-=2;
+            }else if(e->position-1>e->prev_line->position){
+                e->position-=1;
+            }
+            break;
+        case 'K':
+        
             if (e->position-3>e->prev_line->position){ /* je vérifie si il n'y a pas un autre etudiant qui peut gêner e*/
                 e->position-=3;
             }else if(e->position-2>e->prev_line->position){
