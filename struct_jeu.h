@@ -17,6 +17,7 @@ typedef struct jeu{
     int tour; 
     int nombre_tourelles;
     int nombre_etudiant;
+    int score;
     } Jeu;
 
 #endif
