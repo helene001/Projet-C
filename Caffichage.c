@@ -61,9 +61,10 @@ void afficheVagues(FILE* fichierVague)
 
 /* affichejeu(Jeu *jeu) affiche les Etudiants avec leurs PV tour par tour, tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
 void affichejeu(Jeu *jeu){
-    Etudiant* tab[NOMBRE_LIGNES][15];
-
-    while(jeu->etudiants!=NULL){
+    //Etudiant* tab[NOMBRE_LIGNES][15];
+    
+    while(jeu->nombre_etudiant!=0){//tant qu'il y a des étudiants vivants
+        /*
         memset(tab,0,sizeof(tab));//intitialise tout les éléments de tab à NULL
         Etudiant *courant=jeu->etudiants;
         while(courant!=jeu->dernier){
@@ -77,6 +78,9 @@ void affichejeu(Jeu *jeu){
                 tab[(jeu->dernier->ligne)-1][jeu->dernier->position]=jeu->dernier;
             }
         }
+        */
+        /* pour toute les positions sur le terrain de jeu, on regarde si on a une tourelle ou un étudiant et
+        à l'aide de trouver_pos_exacte_tour et trouver_pos_exacte_etu on l'affiche. Sinon on affiche un point*/
         for (int i = 0; i < NOMBRE_LIGNES; i++){
             printf("%d|",i+1);
             for (int j = 0; j < 15; j++){
@@ -96,46 +100,54 @@ void affichejeu(Jeu *jeu){
             printf("\n");
         }
         jeu->tour+=1;
-        actionsTourelles(jeu);
+        actionsTourelles(jeu);//on actionne les tourelles
         Etudiant *courant1=jeu->etudiants;
+        //on boucle sur tout les étudiants en les faisants avancer
         while(courant1!=jeu->dernier){
-            if( courant1->tour<=jeu->tour){
-                avancer(courant1,jeu);
-                if(courant1->position<0){
-                    perdu(jeu);
-                    exit(1);
-                }
+            if( courant1->tour<=jeu->tour){//si l'étudiant courant est sur le terrain de jeu ou peut y rentrer
+                Etudiant * tmp=courant1;
+                /*on utilise une variable temporaire pour pouvoir passer au prochain étudiant
+                        sur la ligne avant d'appeler avancer qui risque d'appeler à son tour
+                        touche_Etudiant qui va libérer la mémoire allouée par l'étudiant si il meurt
+                */
                 courant1=courant1->next;
+                avancer(tmp,jeu);
+
             }else{
                 courant1=courant1->next;
             }
-            if( jeu->dernier->tour<=jeu->tour){
+            if( jeu->dernier->tour<=jeu->tour){//on fait le cas du dernier étudiant
                 avancer(jeu->dernier,jeu);
             }
         }
-        usleep(500000);
+        usleep(1000000);
         //system("clear");
         printf("\n");
         printf("\n");
         
     }
-    gagner();
+    //si il n'y a plus d'étudiant, le jeu est gagné
+    gagner(jeu);
 
 }
 
-//a faire mieux apres perdu et gagner
+//a faire mieux apres perdu et gagner avec un joli affichage
 
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void perdu(Jeu* jeu){
-    //system("clear");
+    system("clear");//si vous souhaiter voir toute les étapes mettez cette ligne en commentaire
     printf("vous avez perdu gros Neuille\n");
+    liberer_tourelle(jeu);
     liberer_etudiant(jeu);
     free(jeu);
 }
 /* perdu() s'occupe de l'affichage en cas de victoire*/
-void gagner(){
+void gagner(Jeu* jeu){
     system("clear");
-    printf("vous avez gagné");
+    liberer_etudiant(jeu);
+    liberer_tourelle(jeu);
+    free(jeu);
+    printf("vous avez gagné\n");
 }
 
 //fonction qui verifie si le fichier est conforme
