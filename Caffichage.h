@@ -11,5 +11,7 @@ void affichejeu(Jeu *j);
 void perdu(Jeu* jeu);
 void gagner();
 int fichierConforme(FILE *fichierVague);
-
+void tri_par_insertion(int tab[], int taille);
+void afficher_meilleurs_scores();
+void ajouter_meilleurs_scores(int nv_score);
 #endif 
