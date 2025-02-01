@@ -88,10 +88,10 @@ void affichejeu(Jeu *jeu){
                 Etudiant *e=trouver_pos_exacte_etu(jeu,i+1,j);
                 if(t!=NULL || e!=NULL){
                     if(t!=NULL){
-                        printf("%3d%c ",t->pointsDeVie,t->type);
+                        printf("\e[32m%3d%c \e[0m",t->pointsDeVie,t->type);
                     }
                     if(e!=NULL){
-                        printf("%3d%c ",e->pointsDeVie,e->type);
+                        printf("\e[31m%3d%c \e[0m",e->pointsDeVie,e->type);
                     }
                 }else{
                     printf("%4c ", '.');
