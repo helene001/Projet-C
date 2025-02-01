@@ -33,7 +33,7 @@ Tourelle *creerTourelle(int ligne, int position, int choix_joueur,Jeu *jeu){
         nouvelleTourelle->prix = 100;
         nouvelleTourelle->pointsDeVie = 1;
         nouvelleTourelle->type='*';
-        nouvelleTourelle->degats=5;
+        nouvelleTourelle->degats=10;
         break;
     case 4: //tourelle_zone:
         nouvelleTourelle->prix = 200;
@@ -52,6 +52,7 @@ Tourelle *creerTourelle(int ligne, int position, int choix_joueur,Jeu *jeu){
 }
 /* chainage_tourelle(Jeu * jeu) demande a l'utilisateur de choisir les tourelles qu'il veut acheter et les places dans une liste chainée dans jeu*/
 void chainage_tourelle(Jeu * jeu){
+
     jeu->nombre_tourelles=0;
     jeu->tourelles=NULL;
     int fini=0;
@@ -61,24 +62,24 @@ void chainage_tourelle(Jeu * jeu){
         int i;//dans i va etre stocker le type de tourelle
         int ligne;
         int position;
-        printf("Il vous reste %d crédits\n\n",jeu->cagnotte);
+        printf("il vous reste %d crédits\n\n",jeu->cagnotte);
         printf("Quelle type de tourelle voulez vous?\n\n");
-        printf("Tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
-        printf("Tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
-        printf("Tapez 3 pour placer une mine. PRIX 100\n\n");
-        printf("Tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
-        printf("Tapez 5 pour placer un mur. PRIX 50\n\n");
+        printf("tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
+        printf("tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
+        printf("tapez 3 pour placer une mine. PRIX 100\n\n");
+        printf("tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
+        printf("tapez 5 pour placer un mur. PRIX 50\n\n");
         scanf("%d" ,&i);
 
         while(i!=1 && i!=2 && i!=3 && i!=4 && i!=5 ){//tant que i n'est pas un type qui existe, on redemande à l'utilisateur d'écrire le type qu'il veut
             printf("Ce type de tourelle n'existe pas veuillez chosir correctement\n\n");
-            printf("Il vous reste %d crédits\n\n",jeu->cagnotte);
+            printf("il vous reste %d crédits\n\n",jeu->cagnotte);
             printf("Quelle type de tourelle voulez vous?\n");
-            printf("Tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
-            printf("Tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
-            printf("Tapez 3 pour placer une mine. PRIX 100\n\n");
-            printf("Tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
-            printf("Tapez 5 pour placer un mur. PRIX 50\n\n");
+            printf("tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
+            printf("tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
+            printf("tapez 3 pour placer une mine. PRIX 100\n\n");
+            printf("tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
+            printf("tapez 5 pour placer un mur. PRIX 50\n\n");
             scanf("%d" ,&i);
         }
         int pas_assez=1;//pas_assez=1 signifie qu'on manque de crédit pour acheter une certaine défense
@@ -114,20 +115,20 @@ void chainage_tourelle(Jeu * jeu){
             }
             if (pas_assez){//si on a pas assez on redemande au joueur et on reboucle
                 printf("Vous n'avez pas assez\n\n");
-                printf("Il vous reste %d crédits\n\n",jeu->cagnotte);
+                printf("il vous reste %d crédits\n\n",jeu->cagnotte);
                 printf("Quelle type de tourelle voulez vous?\n\n");
-                printf("Tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
-                printf("Tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
-                printf("Tapez 3 pour placer une mine. PRIX 100\n\n");
-                printf("Tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
-                printf("Tapez 5 pour placer un mur. PRIX 50\n\n");
+                printf("tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
+                printf("tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
+                printf("tapez 3 pour placer une mine. PRIX 100\n\n");
+                printf("tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
+                printf("tapez 5 pour placer un mur. PRIX 50\n\n");
                 scanf("%d" ,&i);
             }
         }
             
-        printf("Choisissez une ligne entre 1 et 7\n");
+        printf("choisissez une ligne entre 1 et 7\n");
         scanf("%d" ,&ligne);
-        printf("Choisissez une position entre 0 et 13\n");
+        printf("choisissez une position entre 0 et 13\n");
         scanf("%d" ,&position);
         int position_occupe=0;
         if (jeu->tourelles!=NULL){
@@ -147,10 +148,10 @@ void chainage_tourelle(Jeu * jeu){
         }
         while(ligne < 1 || ligne > 7 || position < 0 || position > 13 || position_occupe){//on boucle tant que notre tourelle n'est pas placée correctement
             position_occupe=0;
-            printf("Position invalide\n\n");
-            printf("Choisissez une ligne entre 1 et 7\n\n");
+            printf("position invalide\n\n");
+            printf("choisissez une ligne entre 1 et 7\n\n");
             scanf("%d" ,&ligne);
-            printf("Choisissez une position entre 0 et 13\n\n");
+            printf("choisissez une position entre 0 et 13\n\n");
             scanf("%d" ,&position);
             if (jeu->tourelles!=NULL){
                 if(jeu->tourelles==jeu->derniere){
@@ -194,12 +195,13 @@ void chainage_tourelle(Jeu * jeu){
             printf("\n");
         }
         char choix[10];
-        printf("Voulez vous vous arrêter (tapez OUI si vous voulez sinon tapez n'importe quoi)\n");
+        printf("Voulez vous vous arréter, il vous reste %d crédits (OUI si vous voulez sinon tapez n'importe quoi)\n",jeu->cagnotte);
         scanf("%9s", choix);
         if (strcmp(choix,"OUI")==0){//si le joueur ecrit OUI, il a fini de placer les tourelles sinon on continue.
             break;
         }
     }
+    
 }
 /*trouver_pos_exacte_tour(Jeu* jeu,int ligne ,int pos) permet de trouver si elle existe la tourell à la position pos et ligne ligne*/
 Tourelle *trouver_pos_exacte_tour(Jeu* jeu,int ligne ,int pos){
@@ -222,7 +224,6 @@ void toucher_Tourelle(Jeu *jeu,Tourelle* tourelle,int degat){
         if(tourelle->type=='*'){//si c'est une mine
             Etudiant *e=trouver_pos_exacte_etu(jeu,tourelle->ligne,tourelle->position+1);//on trouve l'étudiant qui à marché sur la mine
             if(e){//si il existe
-                e->position-=1;//on décrémente sa position au cas où il survit. On le fait avant touche_Etudiant pour éviter, dans le cas ou l'étudiants meurt, d'utiliser e que l'on a free dans touche_Etudiant
                 touche_Etudiant(e ,tourelle->degats,e->ligne,jeu);//on inflige les dégats de la mine à e
                 
             }
@@ -282,6 +283,8 @@ void attaquerZone(Jeu *jeu, Tourelle *tourelle){
     if(e->position>=15){//on vérifie si il est sur le terrainde jeu
         return;
     }
+    
+
     if(tourelle->ligne==1){//on fait le cas de si la tourelle est sur la première ligne,on va donc pas chercher d'étudiant au dessus
         Etudiant * e1=trouver_pos_exacte_etu(jeu,tourelle->ligne+1,e->position);//on cherche l'étudiant juste en dessous de e
         if(e1&&e1->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
@@ -289,24 +292,19 @@ void attaquerZone(Jeu *jeu, Tourelle *tourelle){
         }
         
         if(e->position<13){//on vérifie qu'il peut y a voir quelq'un après e
-        Etudiant * e3=trouver_pos_exacte_etu(jeu,tourelle->ligne+1,e->position+1);
-        if(e3&&e3->position<15){
-            touche_Etudiant(e3,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
+            Etudiant * e3=trouver_pos_exacte_etu(jeu,tourelle->ligne+1,e->position+1);
+            if(e3&&e3->position<15){
+                touche_Etudiant(e3,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
+            }
         }
-        }
-        touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
+    touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
     }
     else if(tourelle->ligne==7){
         Etudiant * e1=trouver_pos_exacte_etu(jeu,tourelle->ligne-1,e->position);//on cherche l'étudiant juste en dessous de e
         if(e1&&e1->position<15){
             touche_Etudiant(e1,tourelle->degats,tourelle->ligne,jeu);
         }
-        if(e->position>0){//on vérifie qu'il peut y a voir quelq'un avant e
-        Etudiant * e2=trouver_pos_exacte_etu(jeu,tourelle->ligne,e->position-1);
-        if(e2&&e2->position<15){
-            touche_Etudiant(e2,tourelle->degats,tourelle->ligne,jeu);
-        }
-        }
+        
         if(e->position<13){//on vérifie qu'il peut y a voir quelq'un après e
         Etudiant * e3=trouver_pos_exacte_etu(jeu,tourelle->ligne,e->position+1);
         if(e3&&e3->position<15){
@@ -314,7 +312,7 @@ void attaquerZone(Jeu *jeu, Tourelle *tourelle){
         }
         }
         
-        touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);
+        touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
     }else{
         Etudiant * e1=trouver_pos_exacte_etu(jeu,tourelle->ligne-1,e->position);//on cherche l'étudiant juste en dessous de e
         if(e1&&e1->position<15){
@@ -337,7 +335,7 @@ void attaquerZone(Jeu *jeu, Tourelle *tourelle){
             touche_Etudiant(e4,tourelle->degats,tourelle->ligne,jeu);
         }
         
-        touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);
+        touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
     }
     
 }
