@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
         //afficher les vagues AVANT le debut du jeu
         afficheVagues(fichierVague);
         rewind(fichierVague);
+        /*on initialise jeu*/
         Jeu* jeu=malloc(sizeof(Jeu));
         jeu->tour=0;
         jeu->cagnotte=atoi(cagnotte);
@@ -31,15 +32,15 @@ int main(int argc, char* argv[])
         jeu->derniere=NULL;
         jeu->etudiants=NULL;
         jeu->dernier=NULL;
-        chainage_tourelle(jeu);
+        //on chaine les étudiants
         placer(jeu,fichierVague);
-        connecte_ligne(jeu);
         fclose(fichierVague);
+        //on chaine les étudiants par rapport a leurs lignes
+        connecte_ligne(jeu);
+        //on chaine les tourelles
+        chainage_tourelle(jeu);
+        //on lance le jeu
         affichejeu(jeu);
-        liberer_tourelle(jeu);
-        liberer_etudiant(jeu);
-        free(jeu);
-        
     }
     else
     {
