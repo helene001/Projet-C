@@ -2,6 +2,7 @@
 #include "struct_jeu.h"
 #include "struct_etud.h"
 #include <string.h>
+/* creerTourelle(int ligne, int position, int choix_joueur,Jeu *jeu) intialise une tourelle. Cette fonction est utiliser dans chainage_tourelle*/
 Tourelle *creerTourelle(int ligne, int position, int choix_joueur,Jeu *jeu){
 
     Tourelle *nouvelleTourelle = malloc(sizeof(Tourelle));
@@ -14,7 +15,7 @@ Tourelle *creerTourelle(int ligne, int position, int choix_joueur,Jeu *jeu){
     nouvelleTourelle->ligne = ligne;
     nouvelleTourelle->position = position;
     nouvelleTourelle->next=NULL;
-    switch (choix_joueur)
+    switch (choix_joueur)//on switch sur la valeur rentré par le joueur dans chainage_tourelle.
     {
     case 1: //tourelle_de_base:
         nouvelleTourelle->prix = 100;
@@ -51,6 +52,7 @@ Tourelle *creerTourelle(int ligne, int position, int choix_joueur,Jeu *jeu){
 }
 /* chainage_tourelle(Jeu * jeu) demande a l'utilisateur de choisir les tourelles qu'il veut acheter et les places dans une liste chainée dans jeu*/
 void chainage_tourelle(Jeu * jeu){
+    jeu->nombre_tourelles=0;
     jeu->tourelles=NULL;
     int fini=0;
     Tourelle * tab[NOMBRE_LIGNES][15];
@@ -131,7 +133,7 @@ void chainage_tourelle(Jeu * jeu){
         if (jeu->tourelles!=NULL){
             if(jeu->tourelles==jeu->derniere){
                 if(jeu->tourelles->ligne==ligne && jeu->tourelles->position==position){
-                    position_occupe=1;
+                    position_occupe=1;//si le joueur a déja placé une tourelle à la ligne et position choisis, on m.a.j position_occupe
                 }
             }else{
                 Tourelle * courant=jeu->tourelles;
@@ -168,6 +170,7 @@ void chainage_tourelle(Jeu * jeu){
         }
         //Si on a surmonté tout les problèmes possibles précedent, on ajoute la nouvelle tourelle aux autre tourelles
         Tourelle* t=creerTourelle(ligne,position,i,jeu);
+        jeu->nombre_tourelles+=1;
         if(jeu->tourelles==NULL){//si c'est la première
             jeu->tourelles=t;
             jeu->derniere=t;
@@ -179,7 +182,7 @@ void chainage_tourelle(Jeu * jeu){
         }
         jeu->cagnotte-=t->prix;//on enlève le prix de notre tourelle à la cagnotte
         tab[t->ligne-1][t->position]=t;//on place notre tourelle dans un tableau temporaire.
-        for (int i = 0; i < NOMBRE_LIGNES; i++){/*on affiche la tourelle en utilisant le même principe que dans afficher_jeu de Caffichage*/
+        for (int i = 0; i < NOMBRE_LIGNES; i++){/*on affiche la tourelle en utilisant un double tableau temporaire*/
             printf("%d|",i+1);
             for (int j = 0; j < 15; j++){
                 if(tab[i][j]!=NULL){
@@ -198,7 +201,7 @@ void chainage_tourelle(Jeu * jeu){
         }
     }
 }
-
+/*trouver_pos_exacte_tour(Jeu* jeu,int ligne ,int pos) permet de trouver si elle existe la tourell à la position pos et ligne ligne*/
 Tourelle *trouver_pos_exacte_tour(Jeu* jeu,int ligne ,int pos){
     Tourelle* courante=jeu->tourelles;
     while(courante!=NULL){
@@ -207,81 +210,61 @@ Tourelle *trouver_pos_exacte_tour(Jeu* jeu,int ligne ,int pos){
         }
         courante=courante->next;
     }
-    return NULL;
+    return NULL;//si elle n'existe pas on retourne NULL
 }
-
+/* toucher_Tourelle(Jeu *jeu,Tourelle* tourelle,int degat) permet de gérer le cas ou un étudiant rentre en contact avec une tourelle*/
 void toucher_Tourelle(Jeu *jeu,Tourelle* tourelle,int degat){
     if(tourelle==NULL){
         return;
     }
-    tourelle->pointsDeVie-=degat;
-    if(tourelle->pointsDeVie<0){
-        if(tourelle->type=='*'){
-            Etudiant *e=trouver_pos_exacte_etu(jeu,tourelle->ligne,tourelle->position+1);
-            if(e){
-                touche_Etudiant(e ,tourelle->degats,e->ligne,jeu);
-                if(e){//si e est encore vivant
-                    e->position-=1;
-                }
+    tourelle->pointsDeVie-=degat;//on décrémente les PV avec les dégats de l'étudiant
+    if(tourelle->pointsDeVie<=0){//si la tourelle est détruite
+        if(tourelle->type=='*'){//si c'est une mine
+            Etudiant *e=trouver_pos_exacte_etu(jeu,tourelle->ligne,tourelle->position+1);//on trouve l'étudiant qui à marché sur la mine
+            if(e){//si il existe
+                e->position-=1;//on décrémente sa position au cas où il survit. On le fait avant touche_Etudiant pour éviter, dans le cas ou l'étudiants meurt, d'utiliser e que l'on a free dans touche_Etudiant
+                touche_Etudiant(e ,tourelle->degats,e->ligne,jeu);//on inflige les dégats de la mine à e
+                
             }
         }
+        //on enlève la tourelle détruite de la chaine de tourelles
         Tourelle * courante=jeu->tourelles;
-        while(courante->next!=tourelle){
-            courante=courante->next;
-        }
-        courante->next=tourelle->next;
-        if (tourelle==jeu->derniere){
-            courante=jeu->derniere;
-        }
-    }
-}
-/*
-void contactTourelles(Jeu *jeu)
-{
-    Tourelle *tourelle = jeu->tourelles;
-    while (tourelle != NULL)
-    {
-        Etudiant *etudiant = jeu->etudiants;
-
-        while (etudiant != NULL)
-        {
-            // Vérifie si l'ennemi est au contact avec la tourelle
-            if (etudiant->ligne == tourelle->ligne && etudiant->position == tourelle->position)
-            {
-                printf("Un ennemi de type %d est au contact d'une tourelle !", etudiant->type);
-
-                // Inflige des dégâts ou applique des effets en fonction du type de tourelles
-
-                // Si l'ennemi est détruit
-                if (etudiant->pointsDeVie <= 0)
-                {
-                    printf("Un ennemi a été éliminé !");
-                    supprimerVilain(jeu, etudiant);
-                }
+        if (tourelle==courante){//si c'est la première
+            courante=tourelle->next;
+            jeu->tourelles=courante;
+        }else{
+            while(courante->next!=tourelle){
+                courante=courante->next;
             }
-            etudiant = etudiant->next;
+            courante->next=tourelle->next;
+            if (tourelle==jeu->derniere){//si c'est la dernière
+                jeu->derniere=courante;
+            }
         }
-        tourelle = tourelle->next;
+        jeu->nombre_tourelles-=1;
+        free(tourelle);
     }
 }
-*/
 
+/* attaquerT(Jeu *jeu, Tourelle *tourelle) s'occupe d'infliger les dégats de la tourelle de base au premier étudiant sur sa ligne*/
  void attaquerT(Jeu *jeu, Tourelle *tourelle){
-    Etudiant *e=trouver_ligne_etu(jeu,tourelle->ligne);
-    if (e!=NULL && e->position<15){
-    touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);
+    Etudiant *e=trouver_ligne_etu(jeu,tourelle->ligne);//on cherche le premier étudiant sur la ligne de la tourelle
+    if (e!=NULL && e->position<15){//si e existe et qu'il est sur le terrain de jeu
+    touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
     }
 }
-
+/* ralentirEnnemi(Jeu *jeu, Tourelle *tourelle) s'occupe d'infliger les dégats de la tourelle ralentisseuse au premier étudiant sur sa ligne*/
  void ralentirEnnemi(Jeu *jeu, Tourelle *tourelle){
     Etudiant *e=trouver_ligne_etu(jeu,tourelle->ligne);
     if (e!=NULL){//si on a un étudiant sur cette ligne
-        while(e!=NULL&&e->position<15){//on touche et ralenti tous les étudiants sur la ligne
-        //e->next_line;
+        while(e->next_line!=NULL&&e->position<15){//on touche et ralenti tous les étudiants sur la ligne
         e->vitesse = (e->vitesse > 1) ? e->vitesse - 1 : 1; // Réduit la vitesse sans tomber en dessous de 1
-        touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);
-        e->next_line;
-        //Etudiant* e=temp;
+        Etudiant* temp=e;/*on utilise une variable temporaire pour pouvoir passer au prochain étudiant
+                        sur la ligne avant d'appeler touche_Etudiant, pour éviter d'utiliser e que l'on a free dans cette touche_Etudiant
+        */
+        e=e->next_line;
+        touche_Etudiant(temp,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
+        
         }
         if(e->position<15){
             touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);//on fait le cas du dernier sur sa ligne;
@@ -289,33 +272,29 @@ void contactTourelles(Jeu *jeu)
     }
             
 }
-
+/* attaquerZone(Jeu *jeu, Tourelle *tourelle) s'occupe d'infliger les dégats de la tourelle de zone premier étudiant sur sa ligne et
+    si ils existent, à celui juste derière lui,au dessus de lui et en dessous de lui*/
 void attaquerZone(Jeu *jeu, Tourelle *tourelle){
     Etudiant *e=trouver_ligne_etu(jeu,tourelle->ligne);
-    if(e==NULL){
+    if(e==NULL){//on vérifie si il y a un étudiant sur la ligne de la tourelle
         return;
     }
-    if(e->position>=15){
+    if(e->position>=15){//on vérifie si il est sur le terrainde jeu
         return;
     }
-    if(tourelle->ligne==1){
+    if(tourelle->ligne==1){//on fait le cas de si la tourelle est sur la première ligne,on va donc pas chercher d'étudiant au dessus
         Etudiant * e1=trouver_pos_exacte_etu(jeu,tourelle->ligne+1,e->position);//on cherche l'étudiant juste en dessous de e
-        if(e1&&e1->position<15){
+        if(e1&&e1->position<15){//on vérifie s'il existe et s'il est sur le terrain de jeu
             touche_Etudiant(e1,tourelle->degats,tourelle->ligne,jeu);
         }
-        if(e->position>0){//on vérifie qu'il peut y a voir quelq'un avant e
-        Etudiant * e2=trouver_pos_exacte_etu(jeu,tourelle->ligne,e->position-1);
-        if(e2&&e2->position<15){
-            touche_Etudiant(e2,tourelle->degats,tourelle->ligne,jeu);
-        }
-        }
+        
         if(e->position<13){//on vérifie qu'il peut y a voir quelq'un après e
         Etudiant * e3=trouver_pos_exacte_etu(jeu,tourelle->ligne+1,e->position+1);
         if(e3&&e3->position<15){
-            touche_Etudiant(e3,tourelle->degats,tourelle->ligne,jeu);
+            touche_Etudiant(e3,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
         }
         }
-        touche_Etudiant(e1,tourelle->degats,tourelle->ligne,jeu);
+        touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);//on lui inflige des dégats
     }
     else if(tourelle->ligne==7){
         Etudiant * e1=trouver_pos_exacte_etu(jeu,tourelle->ligne-1,e->position);//on cherche l'étudiant juste en dessous de e
@@ -354,13 +333,16 @@ void attaquerZone(Jeu *jeu, Tourelle *tourelle){
         }
         }
         Etudiant * e4=trouver_pos_exacte_etu(jeu,tourelle->ligne+1,e->position);//on cherche l'étudiant juste au dessus de e
-        touche_Etudiant(e4,tourelle->degats,tourelle->ligne,jeu);
+        if(e4&&e4->position<15){
+            touche_Etudiant(e4,tourelle->degats,tourelle->ligne,jeu);
+        }
         
         touche_Etudiant(e,tourelle->degats,tourelle->ligne,jeu);
     }
     
 }
-
+/*  actionsTourelles(Jeu *jeu) boucle sur la liste chainée de tourelles 
+et effectue les actions de toutes les tourelles du jeu sauf la mine qui est actionné dans toucher_tourelles */
 void actionsTourelles(Jeu *jeu)
 {
     Tourelle *tourelle = jeu->tourelles;
@@ -383,8 +365,9 @@ void actionsTourelles(Jeu *jeu)
         tourelle = tourelle->next;
     }
 }
-
+/*libère la mémoire allouée par les tourelles restantes*/
 void liberer_tourelle(Jeu* j){
+        if(j->nombre_tourelles!=0){
         Tourelle *courant=j->tourelles;
         while(courant!=j->derniere){
         Tourelle* temp=courant;
@@ -392,4 +375,5 @@ void liberer_tourelle(Jeu* j){
         free(temp);
         }
         free(courant);
+        }
     }
