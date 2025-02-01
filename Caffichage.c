@@ -61,8 +61,8 @@ void afficheVagues(FILE* fichierVague)
 
 /* affichejeu(Jeu *jeu) affiche les Etudiants avec leurs PV tour par tour, tant qu'ils ne sont pas tous mort ou que le joueur n'a pas perdu*/
 void affichejeu(Jeu *jeu){
+    jeu->score=jeu->cagnotte;//plus on à dépensé d'argent, moins notre score est bon
     //Etudiant* tab[NOMBRE_LIGNES][15];
-    
     while(jeu->nombre_etudiant!=0){//tant qu'il y a des étudiants vivants
         /*
         memset(tab,0,sizeof(tab));//intitialise tout les éléments de tab à NULL
@@ -82,6 +82,7 @@ void affichejeu(Jeu *jeu){
         /* pour toute les positions sur le terrain de jeu, on regarde si on a une tourelle ou un étudiant et
         à l'aide de trouver_pos_exacte_tour et trouver_pos_exacte_etu on l'affiche. Sinon on affiche un point*/
         for (int i = 0; i < NOMBRE_LIGNES; i++){
+            
             printf("%d|",i+1);
             for (int j = 0; j < 15; j++){
                 Tourelle *t=trouver_pos_exacte_tour(jeu,i+1,j);
@@ -96,6 +97,9 @@ void affichejeu(Jeu *jeu){
                 }else{
                     printf("%4c ", '.');
                 }
+                if(i==0 && j==14){
+                printf("            score:%d", jeu->score);
+            }
             }
             printf("\n");
         }
@@ -135,7 +139,7 @@ void affichejeu(Jeu *jeu){
 
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void perdu(Jeu* jeu){
-    system("clear");//si vous souhaiter voir toute les étapes mettez cette ligne en commentaire
+    //system("clear");//si vous souhaiter voir toute les étapes mettez cette ligne en commentaire
     printf("Vous avez perdu gros Neuille\n");
     liberer_tourelle(jeu);
     liberer_etudiant(jeu);
@@ -143,7 +147,7 @@ void perdu(Jeu* jeu){
 }
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void gagner(Jeu* jeu){
-    system("clear");
+    //system("clear");
     liberer_etudiant(jeu);
     liberer_tourelle(jeu);
     free(jeu);
