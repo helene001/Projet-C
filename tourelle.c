@@ -61,24 +61,24 @@ void chainage_tourelle(Jeu * jeu){
         int i;//dans i va etre stocker le type de tourelle
         int ligne;
         int position;
-        printf("il vous reste %d crédits\n\n",jeu->cagnotte);
+        printf("Il vous reste %d crédits\n\n",jeu->cagnotte);
         printf("Quelle type de tourelle voulez vous?\n\n");
-        printf("tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
-        printf("tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
-        printf("tapez 3 pour placer une mine. PRIX 100\n\n");
-        printf("tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
-        printf("tapez 5 pour placer un mur. PRIX 50\n\n");
+        printf("Tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
+        printf("Tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
+        printf("Tapez 3 pour placer une mine. PRIX 100\n\n");
+        printf("Tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
+        printf("Tapez 5 pour placer un mur. PRIX 50\n\n");
         scanf("%d" ,&i);
 
         while(i!=1 && i!=2 && i!=3 && i!=4 && i!=5 ){//tant que i n'est pas un type qui existe, on redemande à l'utilisateur d'écrire le type qu'il veut
             printf("Ce type de tourelle n'existe pas veuillez chosir correctement\n\n");
-            printf("il vous reste %d crédits\n\n",jeu->cagnotte);
+            printf("Il vous reste %d crédits\n\n",jeu->cagnotte);
             printf("Quelle type de tourelle voulez vous?\n");
-            printf("tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
-            printf("tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
-            printf("tapez 3 pour placer une mine. PRIX 100\n\n");
-            printf("tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
-            printf("tapez 5 pour placer un mur. PRIX 50\n\n");
+            printf("Tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
+            printf("Tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
+            printf("Tapez 3 pour placer une mine. PRIX 100\n\n");
+            printf("Tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
+            printf("Tapez 5 pour placer un mur. PRIX 50\n\n");
             scanf("%d" ,&i);
         }
         int pas_assez=1;//pas_assez=1 signifie qu'on manque de crédit pour acheter une certaine défense
@@ -114,20 +114,20 @@ void chainage_tourelle(Jeu * jeu){
             }
             if (pas_assez){//si on a pas assez on redemande au joueur et on reboucle
                 printf("Vous n'avez pas assez\n\n");
-                printf("il vous reste %d crédits\n\n",jeu->cagnotte);
+                printf("Il vous reste %d crédits\n\n",jeu->cagnotte);
                 printf("Quelle type de tourelle voulez vous?\n\n");
-                printf("tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
-                printf("tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
-                printf("tapez 3 pour placer une mine. PRIX 100\n\n");
-                printf("tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
-                printf("tapez 5 pour placer un mur. PRIX 50\n\n");
+                printf("Tapez 1 pour placer une tourelle de base. PRIX 100\n\n");
+                printf("Tapez 2 pour placer une tourelle ralentisseuse. PRIX 150\n\n");
+                printf("Tapez 3 pour placer une mine. PRIX 100\n\n");
+                printf("Tapez 4 pour placer une tourelle avec degat de zone. PRIX 200\n\n");
+                printf("Tapez 5 pour placer un mur. PRIX 50\n\n");
                 scanf("%d" ,&i);
             }
         }
             
-        printf("choisissez une ligne entre 1 et 7\n");
+        printf("Choisissez une ligne entre 1 et 7\n");
         scanf("%d" ,&ligne);
-        printf("choisissez une position entre 0 et 13\n");
+        printf("Choisissez une position entre 0 et 13\n");
         scanf("%d" ,&position);
         int position_occupe=0;
         if (jeu->tourelles!=NULL){
@@ -147,10 +147,10 @@ void chainage_tourelle(Jeu * jeu){
         }
         while(ligne < 1 || ligne > 7 || position < 0 || position > 13 || position_occupe){//on boucle tant que notre tourelle n'est pas placée correctement
             position_occupe=0;
-            printf("position invalide\n\n");
-            printf("choisissez une ligne entre 1 et 7\n\n");
+            printf("Position invalide\n\n");
+            printf("Choisissez une ligne entre 1 et 7\n\n");
             scanf("%d" ,&ligne);
-            printf("choisissez une position entre 0 et 13\n\n");
+            printf("Choisissez une position entre 0 et 13\n\n");
             scanf("%d" ,&position);
             if (jeu->tourelles!=NULL){
                 if(jeu->tourelles==jeu->derniere){
@@ -194,7 +194,7 @@ void chainage_tourelle(Jeu * jeu){
             printf("\n");
         }
         char choix[10];
-        printf("Voulez vous vous arréter (OUI si vous voulez sinon tapez n'importe quoi)\n");
+        printf("Voulez vous vous arrêter (tapez OUI si vous voulez sinon tapez n'importe quoi)\n");
         scanf("%9s", choix);
         if (strcmp(choix,"OUI")==0){//si le joueur ecrit OUI, il a fini de placer les tourelles sinon on continue.
             break;
