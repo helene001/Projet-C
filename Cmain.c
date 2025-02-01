@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
             break;
         default :
             printf("Choix du niveau invalide.\n");
+            exit(1);
             break;
     }
     
