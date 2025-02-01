@@ -147,6 +147,7 @@ void perdu(Jeu* jeu){
 }
 /* perdu() s'occupe de l'affichage en cas de victoire*/
 void gagner(Jeu* jeu){
+    ajouter_meilleurs_scores(jeu->score);
     //system("clear");
     liberer_etudiant(jeu);
     liberer_tourelle(jeu);
@@ -202,3 +203,90 @@ int fichierConforme(FILE* fichierVague)
     rewind(fichierVague); //si tout va bien, remettre le curseur au debut du fichier
     return 1;
 }
+/* le tri par insertion est utilié dans meilleur_score*/
+void tri_par_insertion(int tab[], int taille) {
+    for (int i=1;i<taille;i++) {
+        int cle=tab[i];
+        int j=i-1;
+
+        // Déplacer les éléments du tableau[0..i-1] plus grands que cle
+        while (j>= 0 && tab[j]> cle) {
+            tab[j+1] = tab[j];
+            j--;
+        }
+        tab[j+1] = cle;
+    }
+}
+void ajouter_meilleurs_scores(int nv_score){
+    FILE *fichier = fopen("meilleur_score.txt", "r");
+    
+    int taille=10;
+    int tab[10]={-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+    int tour,ligne;
+    char debut[20];
+    fgets(debut,sizeof(debut),fichier);//on saute la première ligne ou il y a la cagnotte.
+    int score;
+    int i=0;
+    int nombre_scores=0;
+    while (fscanf(fichier, "%d", &score) == 1) {//on insère les scores enregistrés dans les parties précédentes dans un tableau temporaire
+        tab[i]=score;
+        nombre_scores+=1;
+        i+=1;
+    }
+    fclose(fichier);//on le ferme pour le rouvrir ensuite
+    if(nombre_scores<10){
+        for(int i=0;i<taille;i++){//si on a pas 10 meilleurs scores
+            if(tab[i]==-1){
+                tab[i]=nv_score;
+                break;
+            }
+        }
+    }
+    else{
+        if(tab[taille-1]<nv_score){//sinon on l'ajoute seulement si le nouveau score est meilleur que le moins bon score du fichier
+            tab[taille-1]=nv_score;
+        }
+    }
+    tri_par_insertion(tab,taille);//on tri les scores
+    fichier= fopen("meilleur_score.txt", "w");
+    //on rerempli le fichier avec les nouveaux scores
+    fprintf(fichier, "%s", debut);
+    for(int i=0;i<taille;i++){
+        if(tab[i]!=-1){
+        fprintf(fichier, "%d\n", tab[i]);
+        }
+    }
+    fclose(fichier);
+}
+    
+void afficher_meilleurs_scores(){
+    FILE *fichier;
+    fichier= fopen("meilleur_score.txt", "r");
+    char choix[10];
+    printf("Voulez vous regarder vos meilleurs scores?, (OUI si vous voulez sinon tapez n'importe quoi)\n");
+    scanf("%9s", choix);
+    if (strcmp(choix,"OUI")!=0){//si le joueur ecrit OUI, il a fini de placer les tourelles sinon on continue.
+        if(!fichier){ //on crée le fichier si il n'existe pas
+        fichier= fopen("meilleur_score.txt", "w");
+        fputs("Meilleurs scores: \n", fichier);
+        fclose(fichier);
+        }
+        return;
+    }
+    int score;
+    if(!fichier){//on crée le fichier si il n'existe pas
+        printf("Il n 'y a pas de scores enregistré\n");
+        fichier= fopen("meilleur_score.txt", "w");
+        fputs("Meilleurs scores: \n", fichier);
+        fclose(fichier);
+        return;
+    }
+    char debut[20];
+    fgets(debut,sizeof(debut),fichier);//on saute la première ligne ou il y a la cagnotte.;
+    while (fscanf(fichier, "%d", &score) == 1) {//on insère les scores enregistrés dans les parties précédentes dans un tableau temporaire
+        printf("%d\n",score);
+    }
+    fclose(fichier);
+}
+
+
