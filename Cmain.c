@@ -11,7 +11,7 @@
 int main(int argc, char* argv[])
 {
     FILE* fichierVague = NULL;
-        //choix du niveau et ouverture fichier correspondant
+    //choix du niveau et ouverture fichier correspondant
     int choixNiveau = 0;
     printf("Choisissez le niveau entre 1 et 5 (1 étant facile et 5 difficile) : \n");
     scanf("%d", &choixNiveau);
