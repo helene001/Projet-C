@@ -4,6 +4,7 @@
 #include <time.h>
 #include "struct_jeu.h"
 #include "Tourelle.h"
+#include "Caffichage.h"
 #include <string.h>
 
 /*creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier ) créer des Etudiants et les chaines entre eux en fonctions de leurs lignes
@@ -13,6 +14,7 @@ Etudiant* creer_etu(int type,int ligne,int tour,Jeu* jeu ,FILE* nom_fichier){
     if(e==NULL){// si il y'a une erreur d'allocation la mémoire est libéré correctement
         printf("erreur d'allocation");
         liberer_etudiant(jeu);
+        liberer_tourelle(jeu);
         free(jeu);
         fclose(nom_fichier);
         exit(1); //j'arrete tout le programme
@@ -73,6 +75,8 @@ void type_Etudiant(int type,Etudiant* e,Jeu* j){
     dans jeu en lisant le fichier contenant les informations par rapport aux vagues. Elle utilise creer_etu(int type,int ligne,int tour,Jeu* jeu,FILE* nom_fichier )
     pour ajouter ces Etudiants.   */
 void placer(Jeu *jeu,FILE* nom_fichier){
+
+jeu->nombre_etudiant=0;
 int tour,ligne;
 char type;
 int header;
@@ -80,14 +84,18 @@ srand(time(NULL));//j'intialise le generateur aleatoire pour le type 'X'
 fscanf(nom_fichier, "%d", &header);//on saute la première ligne ou il y a la cagnotte.
 fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type);
 Etudiant* e=creer_etu(type,tour,ligne,jeu,nom_fichier);
+jeu->nombre_etudiant+=1;
 jeu->etudiants=e;
 jeu->dernier=e;
 jeu->etudiants->next=jeu->dernier;
+
 while (fscanf(nom_fichier, "%d %d %c", &tour, &ligne, &type) == 3) {//tant que le fichier est de la forme tour ligne type on boucle
     jeu->dernier->next=creer_etu(type,ligne,tour,jeu,nom_fichier);//on chaine doublement le nouveau étudiants avec l'ancien dernier
     jeu->dernier->next->prev=jeu->dernier;
     jeu->dernier=jeu->dernier->next; 
+    jeu->nombre_etudiant+=1;
     }
+
 }
 /* connecte_ligne(Jeu* jeu) permet de doublement chainer les étudiants entre eux par rapport à leur ligne*/
 void connecte_ligne(Jeu* jeu){
@@ -121,6 +129,7 @@ void connecte_ligne(Jeu* jeu){
 
 /* liberer_liste(Jeu *l) permet de liberer la memoire allouée par la liste chainée d'étudiants */
 void liberer_etudiant(Jeu* j){
+    if(j->nombre_etudiant!=0){
         Etudiant *courant=j->etudiants;
         while(courant!=j->dernier){
         Etudiant* temp=courant;
@@ -129,6 +138,7 @@ void liberer_etudiant(Jeu* j){
         }
         free(courant);
     }
+}
 /* touche_Etudiant(Etudiant *e, int degat_tourelle,int ligne ,Jeu * jeu) permet  de prendre en compte
     les dégats des tourelles et, dans le cas ou l'Etudiant n'a plus de Points de vie, de le tuer. */
 void touche_Etudiant(Etudiant *e, int degat_tourelle, int ligne, Jeu *jeu){
@@ -150,6 +160,7 @@ void touche_Etudiant(Etudiant *e, int degat_tourelle, int ligne, Jeu *jeu){
         if (e->next_line!=NULL) {//si ce n'est pas le dernier de sa ligne
             e->next_line->prev_line=e->prev_line;
         }
+        jeu->nombre_etudiant-=1;
         free(e);
     }
 }
@@ -168,7 +179,7 @@ Etudiant * trouver_ligne_etu(Jeu * jeu,int ligne){
     }
     return NULL;
 }
-/* trouver_pos_exacte_etu(Jeu * jeu,int ligne,int pos) permet de retrouver facilement l'étudiant a une certaine position exacte*/
+/* trouver_pos_exacte_etu(Jeu * jeu,int ligne,int pos) permet de retrouver facilement l'étudiant a position pos et à la ligne ligne*/
 Etudiant * trouver_pos_exacte_etu(Jeu * jeu,int ligne,int pos){
     Etudiant *courant=trouver_ligne_etu(jeu,ligne);
     while(courant!=NULL){
@@ -184,36 +195,56 @@ Etudiant * trouver_pos_exacte_etu(Jeu * jeu,int ligne,int pos){
 
 
 /* avancer(Etudiant* e) fait avancer les Etudiants en fonction de leur vitesse et de la position
-    de l'Etudiant qui le précède.*/
+    de l'Etudiant qui le précède ou de la présence d'un obstacle*/
 void avancer(Etudiant* e,Jeu*jeu){
     if (e->prev_line==NULL){
         if(e->type=='M'){
-            if(e->un_sur_2){
-                    e->position-=1;
-                    e->un_sur_2=0; /* e n'avancera pas au prochain affichage*/
+            if(e->un_sur_2){//le type M avance une fois sur 2
+                int vit=1;
+                /* a chaque itération de la boucle, on regarde si il y'a une tourelle a la position de l'etudiant -vit.
+                    S'il y en a une on apelle toucher_Tourelle sinon si on est a la vitesse de e on arrete la boucle, et  si
+                    on incrémente vit et on recommence.
+                */
+                while(vit<=e->vitesse){
+                    Tourelle *t=trouver_pos_exacte_tour(jeu,e->ligne ,e->position-vit);
+                    if(t){
+                        e->position=e->position -vit +1;//on avance jusqua se positionner juste devant la tourelle
+                        toucher_Tourelle(jeu,t,e->degats);
+                        return;
+                    }else{
+                        if(e->vitesse==vit){
+                            break;
+                        }
+                        vit+=1;
+                    }
+                }
+                e->position-=e->vitesse;
+                e->un_sur_2=0; /* e n'avancera pas au prochain affichage*/
                 }else{
                     e->un_sur_2=1;
                 }
         }else{
-            //int vit=1;
-            /*
-            while(vit<e->vitesse){
-            Tourelle *t=trouver_pos_exacte_tour(jeu,e->ligne ,e->position-vit);
-            if(trouver_pos_exacte_tour(jeu,e->ligne ,e->position-vit)){
-                e->position-=(vit+1);//on avance jusqua s epositionner juste devant la tourelle
-                toucher_Tourelle(jeu,t,e->degats);
-                
-            }else{
-                vit+=1;
+            int vit=1;
+            while(vit<=e->vitesse){
+                Tourelle *t=trouver_pos_exacte_tour(jeu,e->ligne ,e->position-vit);
+                if(t){
+                    e->position=e->position -vit +1;//on avance jusqua se positionner juste devant la tourelle
+                    toucher_Tourelle(jeu,t,e->degats);
+                    return;
+                }else{
+                    if(e->vitesse==vit){
+                        break;
+                    }
+                    vit+=1;
+                }
             }
-            }
-            */
             e->position-=e->vitesse;
         }
         
     }else{
     switch (e->type){
         case 'S':
+            //Je gère l'avancé de e en regardant la distance de l'étudiant devant lui.
             if (e->position-3>e->prev_line->position){ /* je vérifie si il n'y a pas un autre etudiant qui peut gêner e*/
                 e->position-=3;
             }else if(e->position-2>e->prev_line->position){
@@ -250,22 +281,22 @@ void avancer(Etudiant* e,Jeu*jeu){
                 Etudiant *prochain_ligne= e->next_line;
                 Etudiant *precede_ligne= e->prev_line;
                 /* le docteur soigne toute sa ligne une fois sur deux*/
-                while(prochain_ligne!=NULL){
+                while(prochain_ligne!=NULL){//tant qu'il y a des étudiants derriere lui, e leurs rajoute 1 PV
                     if(prochain_ligne->pointsDeVie<prochain_ligne->PV_max){
                         prochain_ligne->pointsDeVie+=1;
                     }
                     prochain_ligne=prochain_ligne->next_line;
                 }
-                while(precede_ligne!=NULL){
+                while(precede_ligne!=NULL){//tant qu'il y a des étudiants devant lui, e leurs rajoute 1 PV
                     if(precede_ligne->pointsDeVie<precede_ligne->PV_max){
                         precede_ligne->pointsDeVie+=1;
                     }
                     precede_ligne=precede_ligne->prev_line;
                 }
-                e->un_sur_2=0;
+                e->un_sur_2=0;//on remet e->un_sur_2 a 0 pour qu'au prochain tour le docteur ne soigne pas
             }
             else{
-                e->un_sur_2=1;
+                e->un_sur_2=1;//si il n'a pas soigné, on remet e->un_sur_2 a 1 pour qu'il soigne au prochain tour
             }
             if (e->position-1>e->prev_line->position){
                 e->position-=1;
@@ -279,6 +310,11 @@ void avancer(Etudiant* e,Jeu*jeu){
             break;
     }
     }
+    //on regarde si e est arrivé a la fin du terrain de jeu
+    if(e->position<0){
+        perdu(jeu);
+        exit(1);
+        }
 }
 
 
