@@ -11,7 +11,31 @@
 int main(int argc, char* argv[])
 {
     FILE* fichierVague = NULL;
-    fichierVague = fopen("ex_vague.txt", "r");
+        //choix du niveau et ouverture fichier correspondant
+    int choixNiveau = 0;
+    printf("Choisissez le niveau entre 1 et 5 (1 étant facile et 5 difficile) : \n");
+    scanf("%d", &choixNiveau);
+    switch(choixNiveau)
+    {
+        case 1 :
+            fichierVague = fopen("lvl1.txt", "r");
+            break;
+        case 2 :
+            fichierVague = fopen("lvl2.txt", "r");
+            break;
+        case 3 :
+            fichierVague = fopen("lvl3.txt", "r");
+            break;
+        case 4 :
+            fichierVague = fopen("lvl4.txt", "r");
+            break;
+        case 5 :
+            fichierVague = fopen("lvl5.txt", "r");
+            break;
+        default :
+            printf("Choix du niveau invalide.\n");
+            break;
+    }
     
     char cagnotte[TAILLE_MAX]= "";
  
