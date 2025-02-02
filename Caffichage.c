@@ -261,7 +261,7 @@ void afficher_meilleurs_scores(){
     FILE *fichier;
     fichier= fopen("meilleur_score.txt", "r");
     char choix[10];
-    printf("Voulez vous regarder vos meilleurs scores?, (OUI si vous voulez sinon tapez n'importe quoi)\n");
+    printf("Voulez-vous regarder vos meilleurs scores ? (tapez OUI si vous voulez sinon tapez n'importe quoi)\n");
     scanf("%9s", choix);
     if (strcmp(choix,"OUI")!=0){//si le joueur ecrit OUI, il a fini de placer les tourelles sinon on continue.
         if(!fichier){ //on crée le fichier si il n'existe pas
@@ -273,7 +273,7 @@ void afficher_meilleurs_scores(){
     }
     int score;
     if(!fichier){//on crée le fichier si il n'existe pas
-        printf("Il n 'y a pas de scores enregistré\n");
+        printf("Il n 'y a pas de scores enregistrés\n");
         fichier= fopen("meilleur_score.txt", "w");
         fputs("Meilleurs scores: \n", fichier);
         fclose(fichier);
