@@ -98,7 +98,7 @@ void affichejeu(Jeu *jeu){
                     printf("%4c ", '.');
                 }
                 if(i==0 && j==14){
-                printf("            score:%d", jeu->score);
+                printf("            Score:%d", jeu->score);
             }
             }
             printf("\n");
