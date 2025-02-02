@@ -125,11 +125,46 @@ void affichejeu(Jeu *jeu){
         //system("clear");
         printf("\n");
         printf("\n");
+        //pause
+        if (pausePartie() == 0) //si la partie est PAS en pause
+        {
+            continue;
+        }
+        else
+        {
+            break;
+        }
         
     }
-    //si il n'y a plus d'étudiant, le jeu est gagné
-    gagner(jeu);
+    if (jeu->nombre_etudiant!=0) //si il y a encore des etudiants
+    {
+        //chargementPartie();
+    }
+    else
+    {
+        //si il n'y a plus d'étudiant, le jeu est gagné
+        gagner(jeu);
+    }
 
+}
+
+int pausePartie()
+{
+    char pause[3];
+    int enPause = 0; //pour l'instant la partie est PAS en pause : 0 = faux = PAS en pause
+
+    printf("Voulez-vous mettre en pause ? Tapez OUI dans ce cas sinon tapez n'importe quoi : \n");
+    scanf("%s", pause);
+    if (strcmp(pause, "OUI") == 0)
+    {
+        printf("La partie est en pause.\n");
+        enPause = 1;
+        return enPause;
+    }
+    else
+    {
+        return enPause;
+    }
 }
 
 //a faire mieux apres perdu et gagner avec un joli affichage
@@ -149,7 +184,7 @@ void gagner(Jeu* jeu){
     liberer_etudiant(jeu);
     liberer_tourelle(jeu);
     free(jeu);
-    printf("Vous avez gagné\n");
+    printf("Vous avez gagné !\n");
 }
 
 //fonction qui verifie si le fichier est conforme
