@@ -134,7 +134,7 @@ void affichejeu(Jeu *jeu){
 
 //a faire mieux apres perdu et gagner avec un joli affichage
 
-/* perdu() s'occupe de l'affichage en cas de victoire*/
+/* perdu() s'occupe de l'affichage en cas de defaite*/
 void perdu(Jeu* jeu){
     //system("clear");//si vous souhaiter voir toute les étapes mettez cette ligne en commentaire
     printf("Vous avez perdu gros Neuille\n");
@@ -142,7 +142,7 @@ void perdu(Jeu* jeu){
     liberer_etudiant(jeu);
     free(jeu);
 }
-/* perdu() s'occupe de l'affichage en cas de victoire*/
+/* gagner() s'occupe de l'affichage en cas de victoire*/
 void gagner(Jeu* jeu){
     ajouter_meilleurs_scores(jeu->score);
     //system("clear");
